@@ -1,0 +1,56 @@
+
+.bar-part {
+    height: 100%;
+    display: inline-block;
+    /*margin: 0 -2px;*/
+
+    position: relative;
+    top: -11px;
+    z-index: 1;
+}
+
+.bar-part.IDLE {
+    /*background: #ccc;*/
+    background: #bfd6fa;
+}
+
+.bar-part.ZOOM_IN {
+    /*background: #51e03e;*/
+    background: #b1d34f;
+}
+
+.bar-part.ZOOM_OUT {
+    /*background: #c00;*/
+    background: #9b1b5c;
+}
+
+.bar-part.PAN {
+    /*background: #442de0;*/
+    background: #4f42ab;
+}
+
+.run {
+    display:block;
+    height:3px;
+    /*width: 100%;*/
+    position: relative;
+    /*background: #aaaaaa;*/
+
+}
+.scale-timepoint {
+    display:inline-block;
+    height: 3px;
+    position: absolute;
+    top: 0;
+}
+
+h2 {
+    margin: 0;
+}
+
+.setting-wrap {
+    width: 100%;
+    /*height: 100%;*/
+    overflow-x: auto;
+    float: left;
+}

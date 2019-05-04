@@ -1,0 +1,9 @@
+<div class="zoom-viz">
+    <div class="brush brush-x" *ngIf="brushZooming&&brushZoomDirection=='x'" [style.left]="(mousePos.x>brushStart.x)? brushStart.x : mousePos.x + 'px'" [style.width]="abs(mousePos.x - brushStart.x) + 'px'"></div>
+    <div class="brush brush-y" *ngIf="brushZooming&&brushZoomDirection=='y'" [style.top]="(mousePos.y>brushStart.y)? brushStart.y : mousePos.y + 'px'" [style.height]="abs(mousePos.y - brushStart.y) + 'px'"></div>
+
+    <div class="zoom-position-indicator zoom-position-indicator-y" *ngIf="dynamicZooming&&dynamicZoomPosition&&dynamicZoomDirection=='y'" [style.left]="dynamicZoomPosition.x + 'px'"></div>
+    <div class="zoom-position-indicator zoom-position-indicator-x" *ngIf="dynamicZooming&&dynamicZoomPosition&&dynamicZoomDirection=='x'"  [style.top]="dynamicZoomPosition.y + 'px'"></div>
+</div>
+
+<ng-content></ng-content>

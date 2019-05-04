@@ -1,0 +1,28 @@
+<div class="container" #container>
+
+  <button (click)="vertical=!vertical">Switch to <span *ngIf="vertical">Horizontal</span><span *ngIf="!vertical">Vertical</span></button>
+  <button (click)="numberMode=!numberMode">Switch to <span *ngIf="numberMode">Dates</span><span *ngIf="!numberMode">Numbers</span></button>
+  <button (click)="showOptions=!showOptions"><span *ngIf="showOptions">Hide</span><span *ngIf="!showOptions">Show</span> Options</button>
+
+  <div *ngIf="showOptions" class="options-wrapper">
+      <label *ngFor="let zoomMode of allZoomModes">
+          <input type="checkbox" [checked]="zoomModes.indexOf(zoomMode)!==-1" (click)="zoomModes.indexOf(zoomMode)===-1 ? zoomModes.push(zoomMode) : zoomModes.splice(zoomModes.indexOf(zoomMode), 1)" />
+          {{zoomMode}}
+      </label>
+  </div>
+
+  <button (click)="createRandomTarget()" *ngIf="!task_running">Do task!</button>
+  <span *ngIf="task_running||task_ran" class="target">
+      Target:
+      <span [style.color]="taskSuccess ? '#007700' : '#000'">
+          <span *ngIf="!numberMode">{{taskTarget*60000 | date:'MMM d, y, h:m a'}}</span>
+          <span *ngIf="numberMode">{{taskTarget | number}}</span>
+      </span>
+  </span>
+
+  <button (click)="confirmSelection()" *ngIf="task_running&&taskSelection!=-1">Confirm</button>
+
+  <numbervis (targetClicked)="targetClicked($event)" [vertical]="vertical" [zoomModes]="zoomModes" [lastNumber]="end" [numberMode]="numberMode" [width]="width" [height]="height" [margin]="margin"></numbervis>
+
+</div>
+

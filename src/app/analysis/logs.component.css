@@ -1,0 +1,87 @@
+
+
+table {
+    width: 100%;
+    border: 0;
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid #ccc;
+}
+
+.setting, .run {
+    background: #ddd;
+    border-radius: 5px;
+    padding: 3px 6px;
+    margin: 5px;
+    cursor: pointer;
+}
+
+
+.setting.active, .run.active {
+    background: #d88;
+}
+
+.tasklog {
+    margin: 10px;
+    cursor: pointer;
+    color: #442de0;
+}
+
+.bar {
+    height: 30px;
+    /*width: 1000px;
+    background: #eee;*/
+    display: inline-block;
+    /*border: 1px solid #ccc;*/
+    /*position: absolute;
+    left: 110px;*/
+}
+
+.bar-part {
+    height: 100%;
+    display: inline-block;
+    /*margin: 0 -2px;*/
+}
+
+.bar-part.IDLE {
+    /*background: #ccc;*/
+    background: #bfd6fa;
+}
+
+.bar-part.ZOOM_IN {
+    /*background: #51e03e;*/
+    background: #b1d34f;
+}
+
+.bar-part.ZOOM_OUT {
+    /*background: #c00;*/
+    background: #9b1b5c;
+}
+
+.bar-part.PAN {
+    /*background: #442de0;*/
+    background: #4f42ab;
+}
+
+
+.show-replay-wrap {
+    pointer-events: none !important;
+}
+/*
+.dist-row {
+    position: relative;
+    height: 100px;
+}*/
+
+.platform {
+    width: 49%;
+    display: block;
+    float: left
+}
+.experiment {
+    color: #1e235f;
+    text-decoration: underline;
+    cursor: pointer;
+}

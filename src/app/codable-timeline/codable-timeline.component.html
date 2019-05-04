@@ -1,0 +1,19 @@
+
+<svg #timelinecontainer id="timelinecontainer" class="timelinecontainer" [attr.width]="width" [attr.height]="height">
+
+  <g class="content">
+    <ng-content></ng-content>
+  </g>
+
+  <g class="axis">
+
+  </g>
+
+  <g *ngIf="height" class="month-informers" [attr.transform]="'translate(0,'+(height-1)+')'">
+    <g *ngFor="let indicatorTime of indicatorTimes" class="month-informer" [attr.transform]="'translate('+(x(indicatorTime))+',0)'">
+      <rect height="30" y="-27" width="1"></rect>
+      <text x="5">{{indicatorTime | date:'MMMM y'}}</text>
+    </g>
+  </g>
+
+</svg>

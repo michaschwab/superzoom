@@ -1,0 +1,483 @@
+<div class="scrollable-content" style="user-select: text; overflow-x: auto">
+
+    <h1><button (click)="showDatesVsNumbersAnalysis=!showDatesVsNumbersAnalysis">Dates Vs Numbers</button></h1>
+
+    <div *ngIf="showDatesVsNumbersAnalysis">
+        <div *ngFor="let platform of ['P', 'M']" class="platform">
+
+            <h3>{{platform === 'P' ? 'Computer' : 'Mobile'}}</h3>
+
+            <div *ngFor="let dist of distNames" class="dist-row">
+                {{dist}}
+
+                <div *ngFor="let datesOrNumbers of ['dates', 'numbers']">
+                    <!--{{datesOrNumbers}}-->
+
+                    <div *ngIf="datesVsNumbersData">
+                        <div class="bar" *ngIf="datesVsNumbersData[platform][dist][datesOrNumbers]">
+                            <div class="bar-part IDLE" [style.width]="(datesVsNumbersData[platform][dist][datesOrNumbers].idleTimes | average) / 1000 * barScalingFactor + 'px'"></div>
+                            <div class="bar-part PAN" [style.width]="(datesVsNumbersData[platform][dist][datesOrNumbers].panTimes | average) / 1000 * barScalingFactor + 'px'"></div>
+                            <div class="bar-part ZOOM_IN" [style.width]="(datesVsNumbersData[platform][dist][datesOrNumbers].zoomInTimes | average) / 1000 * barScalingFactor + 'px'"></div>
+                            <div class="bar-part ZOOM_OUT" [style.width]="(datesVsNumbersData[platform][dist][datesOrNumbers].zoomOutTimes | average) / 1000 * barScalingFactor + 'px'"></div>
+                        </div>
+                        {{(datesVsNumbersData[platform][dist][datesOrNumbers].taskTimes | average) / 1000 | round: 1 }}s
+
+                        for {{datesOrNumbers}}
+                        <!--
+                                        <div *ngIf="datesVsNumbersData[dist][datesOrNumbers]" style="position: relative; display: inline-block; height: 40px; width: 100%">
+                                            <div style="display: block; height: 3px; width:100%" *ngFor="let index of datesVsNumbersData[dist][datesOrNumbers].countTasks | numberToArray">
+                                                <div class="bar" style="height: 3px" [style.width]="datesVsNumbersData[dist][datesOrNumbers].taskTimes[index] / 1000 * barScalingFactor + 'px'">
+                                                    <div class="bar-part IDLE" [style.width]="datesVsNumbersData[dist][datesOrNumbers].idleTimes[index] / 1000 * barScalingFactor + 'px'"></div>
+                                                    <div class="bar-part PAN" [style.width]="datesVsNumbersData[dist][datesOrNumbers].panTimes[index] / 1000 * barScalingFactor + 'px'"></div>
+                                                    <div class="bar-part ZOOM_IN" [style.width]="datesVsNumbersData[dist][datesOrNumbers].zoomInTimes[index] / 1000 * barScalingFactor + 'px'"></div>
+                                                    <div class="bar-part ZOOM_OUT" [style.width]="datesVsNumbersData[dist][datesOrNumbers].zoomOutTimes[index] / 1000 * barScalingFactor + 'px'"></div>
+                                                </div>
+                                            </div>
+
+                                        </div>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <table *ngIf="datesVsNumbersData">
+            <thead>
+            <tr>
+                <th>Distance</th>
+                <th>Average Dates Computer ({{(datesVsNumbersData['P']['dist-0']['dates'].taskTimes.length)}} runs)</th>
+                <th>Average Numbers Computer ({{(datesVsNumbersData['P']['dist-0']['numbers'].taskTimes.length)}} runs)</th>
+                <th>Average Dates Mobile ({{(datesVsNumbersData['M']['dist-0']['dates'].taskTimes.length)}} runs)</th>
+                <th>Average Numbers Mobile ({{(datesVsNumbersData['M']['dist-0']['numbers'].taskTimes.length)}} runs)</th>
+                <th>Stdev Error Dates Computer ({{(datesVsNumbersData['P']['dist-0']['dates'].taskTimes.length)}} runs)</th>
+                <th>Stdev Error Numbers Computer ({{(datesVsNumbersData['P']['dist-0']['numbers'].taskTimes.length)}} runs)</th>
+                <th>Stdev Error Dates Mobile ({{(datesVsNumbersData['M']['dist-0']['dates'].taskTimes.length)}} runs)</th>
+                <th>Stdev Error Numbers Mobile ({{(datesVsNumbersData['M']['dist-0']['numbers'].taskTimes.length)}} runs)</th>
+                <th>Median Range Dates Computer ({{(datesVsNumbersData['P']['dist-0']['dates'].maxRanges.length)}} runs)</th>
+                <th>Median Range Numbers Computer ({{(datesVsNumbersData['P']['dist-0']['numbers'].maxRanges.length)}} runs)</th>
+                <th>Median Range Dates Mobile ({{(datesVsNumbersData['M']['dist-0']['dates'].maxRanges.length)}} runs)</th>
+                <th>Median Range Numbers Mobile ({{(datesVsNumbersData['M']['dist-0']['numbers'].maxRanges.length)}} runs)</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let dist of distNames">
+                <td>{{dist.substr(5)}}</td>
+                <td>{{(datesVsNumbersData['P'][dist]['dates'].taskTimes | average) / 1000 | round: 1 }}</td>
+                <td>{{(datesVsNumbersData['P'][dist]['numbers'].taskTimes | average) / 1000 | round: 1 }}</td>
+                <td>{{(datesVsNumbersData['M'][dist]['dates'].taskTimes | average) / 1000 | round: 1 }}</td>
+                <td>{{(datesVsNumbersData['M'][dist]['numbers'].taskTimes | average) / 1000 | round: 1 }}</td>
+                <td>{{(datesVsNumbersData['P'][dist]['dates'].taskTimes | stdeverror) / 1000 | round: 1 }}</td>
+                <td>{{(datesVsNumbersData['P'][dist]['numbers'].taskTimes | stdeverror) / 1000 | round: 1 }}</td>
+                <td>{{(datesVsNumbersData['M'][dist]['dates'].taskTimes | stdeverror) / 1000 | round: 1 }}</td>
+                <td>{{(datesVsNumbersData['M'][dist]['numbers'].taskTimes | stdeverror) / 1000 | round: 1 }}</td>
+                <td>{{datesVsNumbersData['P'][dist]['dates'].maxRanges | median | round }}</td>
+                <td>{{datesVsNumbersData['P'][dist]['numbers'].maxRanges | median | round }}</td>
+                <td>{{datesVsNumbersData['M'][dist]['dates'].maxRanges | median | round }}</td>
+                <td>{{datesVsNumbersData['M'][dist]['numbers'].maxRanges | median | round }}</td>
+                <!--<td>{{(datesVsNumbersData['P'][dist]['dates'].zoomOutDurationsAfterZoomIn | filteroutextremevalues:1000:100000)}}</td>
+                <td>{{(datesVsNumbersData['P'][dist]['numbers'].zoomOutDurationsAfterZoomIn | filteroutextremevalues:1000:100000) }}</td>
+                <td>{{(datesVsNumbersData['M'][dist]['dates'].zoomOutDurationsAfterZoomIn | filteroutextremevalues:1000:100000) }}</td>
+                <td>{{(datesVsNumbersData['M'][dist]['numbers'].zoomOutDurationsAfterZoomIn | filteroutextremevalues:1000:100000)}}</td>-->
+                <!--<td>{{(datesVsNumbersData['P'][dist]['dates'].zoomOutDurationsAfterZoomIn | average) / 1000 | round: 3 }}</td>
+                <td>{{(datesVsNumbersData['P'][dist]['numbers'].zoomOutDurationsAfterZoomIn | average) / 1000 | round: 3 }}</td>
+                <td>{{(datesVsNumbersData['M'][dist]['dates'].zoomOutDurationsAfterZoomIn | average) / 1000 | round: 3 }}</td>
+                <td>{{(datesVsNumbersData['M'][dist]['numbers'].zoomOutDurationsAfterZoomIn | average) / 1000 | round: 3 }}</td>-->
+            </tr>
+            </tbody>
+        </table>
+
+        <table *ngIf="datesVsNumbersData">
+            <thead>
+            <tr>
+                <th>Distance</th>
+                <th>Average Dates ZOAZI Computers ({{(datesVsNumbersData['P']['dist-0']['dates'].taskTimes.length)}} runs)</th>
+                <th>Average Numbers ZOAZI Computers ({{(datesVsNumbersData['P']['dist-0']['numbers'].taskTimes.length)}} runs)</th>
+                <th>Average Dates ZOAZI Mobile ({{(datesVsNumbersData['M']['dist-0']['dates'].taskTimes.length)}} runs)</th>
+                <th>Average Numbers ZOAZI Mobile ({{(datesVsNumbersData['M']['dist-0']['numbers'].taskTimes.length)}} runs)</th>
+
+                <th>Stdev Error Dates ZOAZI Computers ({{(datesVsNumbersData['P']['dist-0']['dates'].taskTimes.length)}} runs)</th>
+                <th>Stdev Error Numbers ZOAZI Computers ({{(datesVsNumbersData['P']['dist-0']['numbers'].taskTimes.length)}} runs)</th>
+                <th>Stdev Error Dates ZOAZI Mobile ({{(datesVsNumbersData['M']['dist-0']['dates'].taskTimes.length)}} runs)</th>
+                <th>Stdev Error Numbers ZOAZI Mobile ({{(datesVsNumbersData['M']['dist-0']['numbers'].taskTimes.length)}} runs)</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let dist of distNames">
+                <td>{{dist.substr(5)}}</td>
+
+                <td>{{(datesVsNumbersData['P'][dist]['dates'].zoomOutDurationsAfterZoomIn | filteroutextremevalues:0:100000 | average) / 1000}}</td>
+                <td>{{(datesVsNumbersData['P'][dist]['numbers'].zoomOutDurationsAfterZoomIn | filteroutextremevalues:0:100000 | average) / 1000}}</td>
+                <td>{{(datesVsNumbersData['M'][dist]['dates'].zoomOutDurationsAfterZoomIn | filteroutextremevalues:0:100000 | average) / 1000}}</td>
+                <td>{{(datesVsNumbersData['M'][dist]['numbers'].zoomOutDurationsAfterZoomIn | filteroutextremevalues:0:100000 | average) / 1000}}</td>
+
+                <td>{{(datesVsNumbersData['P'][dist]['dates'].zoomOutDurationsAfterZoomIn | filteroutextremevalues:0:100000 | stdeverror) / 1000}}</td>
+                <td>{{(datesVsNumbersData['P'][dist]['numbers'].zoomOutDurationsAfterZoomIn | filteroutextremevalues:0:100000 | stdeverror) / 1000}}</td>
+                <td>{{(datesVsNumbersData['M'][dist]['dates'].zoomOutDurationsAfterZoomIn | filteroutextremevalues:0:100000 | stdeverror) / 1000}}</td>
+                <td>{{(datesVsNumbersData['M'][dist]['numbers'].zoomOutDurationsAfterZoomIn | filteroutextremevalues:0:100000 | stdeverror) / 1000}}</td>
+
+            </tr>
+            </tbody>
+        </table>
+
+        <table *ngIf="datesVsNumbersData">
+            <thead>
+            <tr>
+                <th>Distance</th>
+                <th>Avg Task Time Dates Computer ({{(datesVsNumbersData['P']['dist-0']['dates'].taskTimes.length)}} runs)</th>
+                <th>Avg Idle Time Dates Computer ({{(datesVsNumbersData['P']['dist-0']['dates'].taskTimes.length)}} runs)</th>
+                <th>Avg Pan Time Dates Computer ({{(datesVsNumbersData['P']['dist-0']['dates'].taskTimes.length)}} runs)</th>
+                <th>Avg Zoom In Time Dates Computer ({{(datesVsNumbersData['P']['dist-0']['dates'].taskTimes.length)}} runs)</th>
+                <th>Avg Zoom Out Time Dates Computer ({{(datesVsNumbersData['P']['dist-0']['dates'].taskTimes.length)}} runs)</th>
+
+
+                <th>Avg Task Time Numbers Computer ({{(datesVsNumbersData['P']['dist-0']['numbers'].taskTimes.length)}} runs)</th>
+                <th>Avg Idle Time Numbers Computer ({{(datesVsNumbersData['P']['dist-0']['numbers'].taskTimes.length)}} runs)</th>
+                <th>Avg Pan Time Numbers Computer ({{(datesVsNumbersData['P']['dist-0']['numbers'].taskTimes.length)}} runs)</th>
+                <th>Avg Zoom In Time Numbers Computer ({{(datesVsNumbersData['P']['dist-0']['numbers'].taskTimes.length)}} runs)</th>
+                <th>Avg Zoom Out Time Numbers Computer ({{(datesVsNumbersData['P']['dist-0']['numbers'].taskTimes.length)}} runs)</th>
+
+
+                <th>Avg Task Time Dates Mobile ({{(datesVsNumbersData['M']['dist-0']['dates'].taskTimes.length)}} runs)</th>
+                <th>Avg Idle Time Dates Mobile ({{(datesVsNumbersData['M']['dist-0']['dates'].taskTimes.length)}} runs)</th>
+                <th>Avg Pan Time Dates Mobile ({{(datesVsNumbersData['M']['dist-0']['dates'].taskTimes.length)}} runs)</th>
+                <th>Avg Zoom In Time Dates Mobile ({{(datesVsNumbersData['M']['dist-0']['dates'].taskTimes.length)}} runs)</th>
+                <th>Avg Zoom Out Time Dates Mobile ({{(datesVsNumbersData['M']['dist-0']['dates'].taskTimes.length)}} runs)</th>
+
+
+                <th>Avg Task Time Numbers Mobile ({{(datesVsNumbersData['M']['dist-0']['numbers'].taskTimes.length)}} runs)</th>
+                <th>Avg Idle Time Numbers Mobile ({{(datesVsNumbersData['M']['dist-0']['numbers'].taskTimes.length)}} runs)</th>
+                <th>Avg Pan Time Numbers Mobile ({{(datesVsNumbersData['M']['dist-0']['numbers'].taskTimes.length)}} runs)</th>
+                <th>Avg Zoom In Time Numbers Mobile ({{(datesVsNumbersData['M']['dist-0']['numbers'].taskTimes.length)}} runs)</th>
+                <th>Avg Zoom Out Time Numbers Mobile ({{(datesVsNumbersData['M']['dist-0']['numbers'].taskTimes.length)}} runs)</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let dist of distNames">
+                <td>{{dist.substr(5)}}</td>
+
+                <td>{{(datesVsNumbersData['P'][dist]['dates'].taskTimes | average) / 1000 | round: 1 }}</td>
+                <td>{{(datesVsNumbersData['P'][dist]['dates'].idleTimes | average) / 1000 | round: 1 }}</td>
+                <td>{{(datesVsNumbersData['P'][dist]['dates'].panTimes | average) / 1000 | round: 1 }}</td>
+                <td>{{(datesVsNumbersData['P'][dist]['dates'].zoomInTimes | average) / 1000 | round: 1 }}</td>
+                <td>{{(datesVsNumbersData['P'][dist]['dates'].zoomOutTimes | average) / 1000 | round: 1 }}</td>
+
+                <td>{{(datesVsNumbersData['P'][dist]['numbers'].taskTimes | average) / 1000 | round: 1 }}</td>
+                <td>{{(datesVsNumbersData['P'][dist]['numbers'].idleTimes | average) / 1000 | round: 1 }}</td>
+                <td>{{(datesVsNumbersData['P'][dist]['numbers'].panTimes | average) / 1000 | round: 1 }}</td>
+                <td>{{(datesVsNumbersData['P'][dist]['numbers'].zoomInTimes | average) / 1000 | round: 1 }}</td>
+                <td>{{(datesVsNumbersData['P'][dist]['numbers'].zoomOutTimes | average) / 1000 | round: 1 }}</td>
+
+                <td>{{(datesVsNumbersData['M'][dist]['dates'].taskTimes | average) / 1000 | round: 1 }}</td>
+                <td>{{(datesVsNumbersData['M'][dist]['dates'].idleTimes | average) / 1000 | round: 1 }}</td>
+                <td>{{(datesVsNumbersData['M'][dist]['dates'].panTimes | average) / 1000 | round: 1 }}</td>
+                <td>{{(datesVsNumbersData['M'][dist]['dates'].zoomInTimes | average) / 1000 | round: 1 }}</td>
+                <td>{{(datesVsNumbersData['M'][dist]['dates'].zoomOutTimes | average) / 1000 | round: 1 }}</td>
+
+                <td>{{(datesVsNumbersData['M'][dist]['numbers'].taskTimes | average) / 1000 | round: 1 }}</td>
+                <td>{{(datesVsNumbersData['M'][dist]['numbers'].idleTimes | average) / 1000 | round: 1 }}</td>
+                <td>{{(datesVsNumbersData['M'][dist]['numbers'].panTimes | average) / 1000 | round: 1 }}</td>
+                <td>{{(datesVsNumbersData['M'][dist]['numbers'].zoomInTimes | average) / 1000 | round: 1 }}</td>
+                <td>{{(datesVsNumbersData['M'][dist]['numbers'].zoomOutTimes | average) / 1000 | round: 1 }}</td>
+
+
+                <!--<td>{{(datesVsNumbersData['P'][dist]['dates'].zoomOutDurationsAfterZoomIn | filteroutextremevalues:1000:100000)}}</td>
+                <td>{{(datesVsNumbersData['P'][dist]['numbers'].zoomOutDurationsAfterZoomIn | filteroutextremevalues:1000:100000) }}</td>
+                <td>{{(datesVsNumbersData['M'][dist]['dates'].zoomOutDurationsAfterZoomIn | filteroutextremevalues:1000:100000) }}</td>
+                <td>{{(datesVsNumbersData['M'][dist]['numbers'].zoomOutDurationsAfterZoomIn | filteroutextremevalues:1000:100000)}}</td>-->
+                <!--<td>{{(datesVsNumbersData['P'][dist]['dates'].zoomOutDurationsAfterZoomIn | average) / 1000 | round: 3 }}</td>
+                <td>{{(datesVsNumbersData['P'][dist]['numbers'].zoomOutDurationsAfterZoomIn | average) / 1000 | round: 3 }}</td>
+                <td>{{(datesVsNumbersData['M'][dist]['dates'].zoomOutDurationsAfterZoomIn | average) / 1000 | round: 3 }}</td>
+                <td>{{(datesVsNumbersData['M'][dist]['numbers'].zoomOutDurationsAfterZoomIn | average) / 1000 | round: 3 }}</td>-->
+            </tr>
+            </tbody>
+        </table>
+
+
+
+        <table *ngIf="datesVsNumbersData">
+            <thead>
+            <tr>
+                <th>Distance</th>
+                <th>Avg Task Time Numbers Dates Difference Computer ({{(datesVsNumbersData['P']['dist-0']['dates'].taskTimes.length)}} runs)</th>
+                <th>Avg Idle Time Numbers Dates Difference Computer ({{(datesVsNumbersData['P']['dist-0']['dates'].taskTimes.length)}} runs)</th>
+                <th>Avg Pan Time Numbers Dates Difference Computer ({{(datesVsNumbersData['P']['dist-0']['dates'].taskTimes.length)}} runs)</th>
+                <th>Avg Zoom In Time Numbers Dates Difference Computer ({{(datesVsNumbersData['P']['dist-0']['dates'].taskTimes.length)}} runs)</th>
+                <th>Avg Zoom Out Time Numbers Dates Difference Computer ({{(datesVsNumbersData['P']['dist-0']['dates'].taskTimes.length)}} runs)</th>
+
+
+                <th>Avg Task Time Numbers Dates Difference Mobile ({{(datesVsNumbersData['M']['dist-0']['dates'].taskTimes.length)}} runs)</th>
+                <th>Avg Idle Time Numbers Dates Difference Mobile ({{(datesVsNumbersData['M']['dist-0']['dates'].taskTimes.length)}} runs)</th>
+                <th>Avg Pan Time Numbers Dates Difference Mobile ({{(datesVsNumbersData['M']['dist-0']['dates'].taskTimes.length)}} runs)</th>
+                <th>Avg Zoom In Time Numbers Dates Difference Mobile ({{(datesVsNumbersData['M']['dist-0']['dates'].taskTimes.length)}} runs)</th>
+                <th>Avg Zoom Out Time Numbers Dates Difference Mobile ({{(datesVsNumbersData['M']['dist-0']['dates'].taskTimes.length)}} runs)</th>
+
+
+
+                <th>Error Task Time Numbers Dates Difference Computer ({{(datesVsNumbersData['P']['dist-0']['dates'].taskTimes.length)}} runs)</th>
+                <th>Error Idle Time Numbers Dates Difference Computer ({{(datesVsNumbersData['P']['dist-0']['dates'].taskTimes.length)}} runs)</th>
+                <th>Error Pan Time Numbers Dates Difference Computer ({{(datesVsNumbersData['P']['dist-0']['dates'].taskTimes.length)}} runs)</th>
+                <th>Error Zoom In Time Numbers Dates Difference Computer ({{(datesVsNumbersData['P']['dist-0']['dates'].taskTimes.length)}} runs)</th>
+                <th>Error Zoom Out Time Numbers Dates Difference Computer ({{(datesVsNumbersData['P']['dist-0']['dates'].taskTimes.length)}} runs)</th>
+
+                <th>Error Task Time Numbers Dates Difference Mobile ({{(datesVsNumbersData['M']['dist-0']['dates'].taskTimes.length)}} runs)</th>
+                <th>Error Idle Time Numbers Dates Difference Mobile ({{(datesVsNumbersData['M']['dist-0']['dates'].taskTimes.length)}} runs)</th>
+                <th>Error Pan Time Numbers Dates Difference Mobile ({{(datesVsNumbersData['M']['dist-0']['dates'].taskTimes.length)}} runs)</th>
+                <th>Error Zoom In Time Numbers Dates Difference Mobile ({{(datesVsNumbersData['M']['dist-0']['dates'].taskTimes.length)}} runs)</th>
+                <th>Error Zoom Out Time Numbers Dates Difference Mobile ({{(datesVsNumbersData['M']['dist-0']['dates'].taskTimes.length)}} runs)</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let dist of distNames">
+                <td>{{dist.substr(5)}}</td>
+
+                <td>{{(datesVsNumbersData['P'][dist]['numbers'].taskTimes | average)  / 1000 | round: 1 }}</td>
+                <td>{{(datesVsNumbersData['P'][dist]['numbers'].idleTimes | average) / 1000 | round: 1 }}</td>
+                <td>{{(datesVsNumbersData['P'][dist]['numbers'].panTimes | average)  / 1000 | round: 1 }}</td>
+                <td>{{(datesVsNumbersData['P'][dist]['numbers'].zoomInTimes | average)  / 1000 | round: 1 }}</td>
+                <td>{{(datesVsNumbersData['P'][dist]['numbers'].zoomOutTimes | average) / 1000 | round: 1 }}</td>
+
+                <td>{{(datesVsNumbersData['M'][dist]['numbers'].taskTimes | average)  / 1000 | round: 1 }}</td>
+                <td>{{(datesVsNumbersData['M'][dist]['numbers'].idleTimes | average) / 1000 | round: 1 }}</td>
+                <td>{{(datesVsNumbersData['M'][dist]['numbers'].panTimes | average)  / 1000 | round: 1 }}</td>
+                <td>{{(datesVsNumbersData['M'][dist]['numbers'].zoomInTimes | average)  / 1000 | round: 1 }}</td>
+                <td>{{(datesVsNumbersData['M'][dist]['numbers'].zoomOutTimes | average) / 1000 | round: 1 }}</td>
+
+
+
+                <td>{{(datesVsNumbersData['P'][dist]['numbers'].taskTimes | stdev) / 1000 | round: 1 }}</td>
+                <td>{{(datesVsNumbersData['P'][dist]['numbers'].idleTimes | stdev)  / 1000 | round: 1 }}</td>
+                <td>{{(datesVsNumbersData['P'][dist]['numbers'].panTimes | stdev) / 1000 | round: 1 }}</td>
+                <td>{{(datesVsNumbersData['P'][dist]['numbers'].zoomInTimes | stdev) / 1000 | round: 1 }}</td>
+                <td>{{(datesVsNumbersData['P'][dist]['numbers'].zoomOutTimes | stdev)  /1000 | round: 1 }}</td>
+
+                <td>{{(datesVsNumbersData['M'][dist]['numbers'].taskTimes | stdev) / 1000 | round: 1 }}</td>
+                <td>{{(datesVsNumbersData['M'][dist]['numbers'].idleTimes | stdev)  / 1000 | round: 1 }}</td>
+                <td>{{(datesVsNumbersData['M'][dist]['numbers'].panTimes | stdev)  / 1000 | round: 1 }}</td>
+                <td>{{(datesVsNumbersData['M'][dist]['numbers'].zoomInTimes | stdev) /  1000 | round: 1 }}</td>
+                <td>{{(datesVsNumbersData['M'][dist]['numbers'].zoomOutTimes | stdev) /  1000 | round: 1 }}</td>
+
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h1><button (click)="showVerticalVsHorizontalAnalysis=!showVerticalVsHorizontalAnalysis">Vertical vs Horizontal</button></h1>
+
+    <div *ngIf="showVerticalVsHorizontalAnalysis">
+
+        Computer
+
+        <table *ngIf="verticalVsHorizontalData&&verticalVsHorizontalData['P']">
+            <thead>
+            <tr>
+                <th>Distance</th>
+                <th>Average Horizontal NormalPan WheelZoom Computer ({{(verticalVsHorizontalData['P']['dist-0']['horizontal-dates-normalpan-wheelzoom'].taskTimes.length)}} runs)</th>
+                <th>Average Horizontal WheelPan BrushZoom Computer ({{(verticalVsHorizontalData['P']['dist-0']['horizontal-dates-wheelpan-brushzoomin-dblclickzoomout'].taskTimes.length)}} runs)</th>
+                <th>Average Vertical NormalPan WheelZoom Computer ({{(verticalVsHorizontalData['P']['dist-0']['vertical-dates-normalpan-wheelzoom'].taskTimes.length)}} runs)</th>
+                <th>Average Vertical WheelPan BrushZoom Computer ({{(verticalVsHorizontalData['P']['dist-0']['vertical-dates-wheelpan-brushzoomin-dblclickzoomout'].taskTimes.length)}} runs)</th>
+                <th>Stdev Error Horizontal NormalPan WheelZoom Computer ({{(verticalVsHorizontalData['P']['dist-0']['horizontal-dates-normalpan-wheelzoom'].taskTimes.length)}} runs)</th>
+                <th>Stdev Error Horizontal WheelPan BrushZoom Computer ({{(verticalVsHorizontalData['P']['dist-0']['horizontal-dates-wheelpan-brushzoomin-dblclickzoomout'].taskTimes.length)}} runs)</th>
+                <th>Stdev Error Vertical NormalPan WheelZoom Computer ({{(verticalVsHorizontalData['P']['dist-0']['vertical-dates-normalpan-wheelzoom'].taskTimes.length)}} runs)</th>
+                <th>Stdev Error Vertical WheelPan BrushZoom Computer ({{(verticalVsHorizontalData['P']['dist-0']['vertical-dates-wheelpan-brushzoomin-dblclickzoomout'].taskTimes.length)}} runs)</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let dist of distNames">
+                <td>{{dist.substr(5)}}</td>
+                <td *ngFor="let setting of ['horizontal-dates-normalpan-wheelzoom', 'horizontal-dates-wheelpan-brushzoomin-dblclickzoomout', 'vertical-dates-normalpan-wheelzoom', 'vertical-dates-wheelpan-brushzoomin-dblclickzoomout']">
+                    {{(verticalVsHorizontalData['P'][dist][setting].taskTimes | filterhighvalues | average) / 1000 | round: 1 }}
+                </td>
+                <td *ngFor="let setting of ['horizontal-dates-normalpan-wheelzoom', 'horizontal-dates-wheelpan-brushzoomin-dblclickzoomout', 'vertical-dates-normalpan-wheelzoom', 'vertical-dates-wheelpan-brushzoomin-dblclickzoomout']">
+                    {{(verticalVsHorizontalData['P'][dist][setting].taskTimes | filterhighvalues | stdeverror) / 1000 | round: 1 }}
+                </td>
+                <!--<td>{{(verticalVsHorizontalData['P'][dist]['horizontal-dates-normalpan-wheelzoom'].taskTimes | average) / 1000 | round: 1 }}</td>
+                <td>{{(verticalVsHorizontalData['P'][dist]['horizontal-dates-wheelpan-brushzoomin-dblclickzoomout'].taskTimes | average) / 1000 | round: 1 }}</td>
+                <td>{{(verticalVsHorizontalData['P'][dist]['vertical-dates-normalpan-wheelzoom'].taskTimes | average) / 1000 | round: 1 }}</td>
+                <td>{{(verticalVsHorizontalData['P'][dist]['vertical-dates-wheelpan-brushzoomin-dblclickzoomout'].taskTimes | average) / 1000 | round: 1 }}</td>
+                <td>{{(verticalVsHorizontalData['P'][dist]['horizontal-dates-normalpan-wheelzoom'].taskTimes | stdeverror) / 1000 | round: 1 }}</td>
+                <td>{{(verticalVsHorizontalData['P'][dist]['horizontal-dates-wheelpan-brushzoomin-dblclickzoomout'].taskTimes | stdeverror) / 1000 | round: 1 }}</td>
+                <td>{{(verticalVsHorizontalData['P'][dist]['vertical-dates-normalpan-wheelzoom'].taskTimes | stdeverror) / 1000 | round: 1 }}</td>
+                <td>{{(verticalVsHorizontalData['P'][dist]['vertical-dates-wheelpan-brushzoomin-dblclickzoomout'].taskTimes | stdeverror) / 1000 | round: 1 }}</td>-->
+            </tr>
+            </tbody>
+        </table>
+
+        Mobile
+
+        <table *ngIf="verticalVsHorizontalData&&verticalVsHorizontalData['M']">
+            <thead>
+            <tr>
+                <th>Distance</th>
+                <th *ngFor="let setting of ['horizontal-dates-normalpan-dynamiczoomxadjustable', 'horizontal-dates-normalpan-pinchzoom', 'vertical-dates-normalpan-dynamiczoomxadjustable', 'vertical-dates-normalpan-pinchzoom']">
+                    Average {{setting}} Mobile ({{(verticalVsHorizontalData['M']['dist-0'][setting].taskTimes.length)}} runs)
+                </th>
+                <th *ngFor="let setting of ['horizontal-dates-normalpan-dynamiczoomxadjustable', 'horizontal-dates-normalpan-pinchzoom', 'vertical-dates-normalpan-dynamiczoomxadjustable', 'vertical-dates-normalpan-pinchzoom']">
+                    Stdev Error {{setting}} Mobile ({{(verticalVsHorizontalData['M']['dist-0'][setting].taskTimes.length)}} runs)
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let dist of distNames">
+                <td>{{dist.substr(5)}}</td>
+                <td *ngFor="let setting of ['horizontal-dates-normalpan-dynamiczoomxadjustable', 'horizontal-dates-normalpan-pinchzoom', 'vertical-dates-normalpan-dynamiczoomxadjustable', 'vertical-dates-normalpan-pinchzoom']">
+                    {{(verticalVsHorizontalData['M'][dist][setting].taskTimes | average) / 1000 | round: 1 }}
+                </td>
+                <td *ngFor="let setting of ['horizontal-dates-normalpan-dynamiczoomxadjustable', 'horizontal-dates-normalpan-pinchzoom', 'vertical-dates-normalpan-dynamiczoomxadjustable', 'vertical-dates-normalpan-pinchzoom']">
+                    {{(verticalVsHorizontalData['M'][dist][setting].taskTimes | stdeverror) / 1000 | round: 1 }}
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+    </div>
+    <!--<ul>
+        <li *ngFor="let key of 10 | numberToArray">{{key}}</li>
+    </ul>-->
+
+    <h1>Run Comparison of study 2 data</h1>
+
+    <div>
+
+
+        <table *ngIf="taskDurationIndividualDifferences&&taskDurationIndividualDifferences['horizontal-dates-normalpan-wheelzoom']&&taskDurationIndividualDifferences['horizontal-dates-normalpan-wheelzoom']['dist-0'].length">
+            <thead>
+            <tr>
+                <th>Distance</th>
+                <th>Average horizontal wheelzoom diff Computer ({{(taskDurationIndividualDifferences['horizontal-dates-normalpan-wheelzoom']['dist-0'].length)}} runs)</th>
+                <th>Average horizontal brushzoom diff Computer ({{(taskDurationIndividualDifferences['horizontal-dates-wheelpan-brushzoomin-dblclickzoomout']['dist-0'].length)}} runs)</th>
+                <th>Average vertical wheelzoom diff Computer ({{(taskDurationIndividualDifferences['vertical-dates-normalpan-wheelzoom']['dist-0'].length)}} runs)</th>
+                <th>Average vertical brushzoom diff Computer ({{(taskDurationIndividualDifferences['vertical-dates-wheelpan-brushzoomin-dblclickzoomout']['dist-0'].length)}} runs)</th>
+                <th>Stdev Error horizontal wheelzoom diff Computer ({{(taskDurationIndividualDifferences['horizontal-dates-normalpan-wheelzoom']['dist-0'].length)}} runs)</th>
+                <th>Stdev Error horizontal brushzoom diff Computer ({{(taskDurationIndividualDifferences['horizontal-dates-wheelpan-brushzoomin-dblclickzoomout']['dist-0'].length)}} runs)</th>
+                <th>Stdev Error vertical wheelzoom diff Computer ({{(taskDurationIndividualDifferences['vertical-dates-normalpan-wheelzoom']['dist-0'].length)}} runs)</th>
+                <th>Stdev Error vertical brushzoom diff Computer ({{(taskDurationIndividualDifferences['vertical-dates-wheelpan-brushzoomin-dblclickzoomout']['dist-0'].length)}} runs)</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let dist of distNames">
+                <td>{{dist.substr(5)}}</td>
+
+
+                <td *ngFor="let setting of ['horizontal-dates-normalpan-wheelzoom', 'horizontal-dates-wheelpan-brushzoomin-dblclickzoomout', 'vertical-dates-normalpan-wheelzoom', 'vertical-dates-wheelpan-brushzoomin-dblclickzoomout']">
+                    {{(taskDurationIndividualDifferences[setting][dist] | average) / 1000 | round: 1 }}
+                </td>
+
+                <td *ngFor="let setting of ['horizontal-dates-normalpan-wheelzoom', 'horizontal-dates-wheelpan-brushzoomin-dblclickzoomout', 'vertical-dates-normalpan-wheelzoom', 'vertical-dates-wheelpan-brushzoomin-dblclickzoomout']">
+                    {{(taskDurationIndividualDifferences[setting][dist] | stdeverror) / 1000 | round: 1 }}
+                </td>
+                <!--<td>{{(verticalVsHorizontalData['P'][dist]['horizontal-dates-normalpan-wheelzoom'].taskTimes | average) / 1000 | round: 1 }}</td>
+                <td>{{(verticalVsHorizontalData['P'][dist]['horizontal-dates-wheelpan-brushzoomin-dblclickzoomout'].taskTimes | average) / 1000 | round: 1 }}</td>
+                <td>{{(verticalVsHorizontalData['P'][dist]['vertical-dates-normalpan-wheelzoom'].taskTimes | average) / 1000 | round: 1 }}</td>
+                <td>{{(verticalVsHorizontalData['P'][dist]['vertical-dates-wheelpan-brushzoomin-dblclickzoomout'].taskTimes | average) / 1000 | round: 1 }}</td>
+                <td>{{(verticalVsHorizontalData['P'][dist]['horizontal-dates-normalpan-wheelzoom'].taskTimes | stdeverror) / 1000 | round: 1 }}</td>
+                <td>{{(verticalVsHorizontalData['P'][dist]['horizontal-dates-wheelpan-brushzoomin-dblclickzoomout'].taskTimes | stdeverror) / 1000 | round: 1 }}</td>
+                <td>{{(verticalVsHorizontalData['P'][dist]['vertical-dates-normalpan-wheelzoom'].taskTimes | stdeverror) / 1000 | round: 1 }}</td>
+                <td>{{(verticalVsHorizontalData['P'][dist]['vertical-dates-wheelpan-brushzoomin-dblclickzoomout'].taskTimes | stdeverror) / 1000 | round: 1 }}</td>-->
+            </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+    <h1>individual performances</h1>
+
+    <div *ngIf="false">
+
+
+        <table *ngIf="individualPerformances.length">
+            <thead>
+            <tr>
+                <th>Distance</th>
+                <th *ngFor="let performance of individualPerformances; let i=index">{{i}}</th>
+                <th *ngFor="let performance of individualPerformances; let i=index">Error {{i}}</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let dist of distNames">
+                <td>{{dist.substr(5)}}</td>
+                <td *ngFor="let performance of individualPerformances">
+
+                    <span *ngIf="performance[dist]">{{(performance[dist] | median) / 1000 | number}}</span>
+
+                </td>
+
+                <td *ngFor="let performance of individualPerformances">
+
+                    <span *ngIf="performance[dist]">{{(performance[dist] | stdeverror) / 1000 | number}}</span>
+
+                </td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+
+    <h1>Interaction Comparison Computer</h1>
+
+    <div>
+
+        <table *ngIf="interactionComparisonData&&interactionComparisonData['P']">
+            <thead>
+                <tr>
+                    <th>Distance</th>
+                    <th *ngFor="let setting of ['vertical-dates-normalpan-wheelzoom', 'vertical-dates-normalpan-holdzoomin-holdzoomout', 'vertical-dates-normalpan-dblclickzoomin-holdzoomout']">
+                        {{setting}}
+                    </th>
+                    <th *ngFor="let setting of ['vertical-dates-normalpan-wheelzoom', 'vertical-dates-normalpan-holdzoomin-holdzoomout', 'vertical-dates-normalpan-dblclickzoomin-holdzoomout']">
+                        {{setting}} stdev error
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let dist of distNames">
+                <td>{{dist.substr(5)}}</td>
+
+
+                <td *ngFor="let setting of ['vertical-dates-normalpan-wheelzoom', 'vertical-dates-normalpan-holdzoomin-holdzoomout', 'vertical-dates-normalpan-dblclickzoomin-holdzoomout']">
+                    {{(interactionComparisonData['P'][dist][setting].taskTimes | average) / 1000 | round: 1 }}
+                </td>
+                <td *ngFor="let setting of ['vertical-dates-normalpan-wheelzoom', 'vertical-dates-normalpan-holdzoomin-holdzoomout', 'vertical-dates-normalpan-dblclickzoomin-holdzoomout']">
+                    {{(interactionComparisonData['P'][dist][setting].taskTimes | stdeverror) / 1000 | round: 1 }}
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+
+
+    <h1>Interaction Comparison Mobile</h1>
+
+    <div>
+
+        <table *ngIf="interactionComparisonData&&interactionComparisonData['M']">
+            <thead>
+            <tr>
+                <th>Distance</th>
+                <th *ngFor="let setting of ['vertical-dates-normalpan-pinchzoom', 'vertical-dates-normalpan-holdzoomin-holdzoomout', 'vertical-dates-pinchpan-brushzoomin-dblclickzoomout']">
+                    {{setting}}
+                </th>
+                <th *ngFor="let setting of ['vertical-dates-normalpan-pinchzoom', 'vertical-dates-normalpan-holdzoomin-holdzoomout', 'vertical-dates-pinchpan-brushzoomin-dblclickzoomout']">
+                    {{setting}} stdev error
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let dist of distNames">
+                <td>{{dist.substr(5)}}</td>
+
+
+                <td *ngFor="let setting of ['vertical-dates-normalpan-pinchzoom', 'vertical-dates-normalpan-holdzoomin-holdzoomout', 'vertical-dates-pinchpan-brushzoomin-dblclickzoomout']">
+                    {{(interactionComparisonData['M'][dist][setting].taskTimes | average) / 1000 | round: 1 }}
+                </td>
+                <td *ngFor="let setting of ['vertical-dates-normalpan-pinchzoom', 'vertical-dates-normalpan-holdzoomin-holdzoomout', 'vertical-dates-pinchpan-brushzoomin-dblclickzoomout']">
+                    {{(interactionComparisonData['M'][dist][setting].taskTimes | stdeverror) / 1000 | round: 1 }}
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+</div>

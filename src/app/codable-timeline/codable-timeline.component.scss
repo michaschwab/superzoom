@@ -1,0 +1,12 @@
+.timelinecontainer {
+  cursor: default;
+}
+
+.axis, .axis text {
+  pointer-events: none;
+  cursor: default;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}

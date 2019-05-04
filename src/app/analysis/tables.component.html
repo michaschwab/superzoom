@@ -1,0 +1,285 @@
+<div class="scrollable-content" style="user-select: text; overflow-x: auto">
+
+    <div *ngIf="oldSchoolers.length">
+        <!--oldschoolers: {{oldSchoolers}}
+        newcomers: {{newComers}}-->
+
+        avg: {{(oldSchoolers| filterhighvalues | average) / 1000 | number:'1.1-1'}} (oldschool) vs {{(newComers| filterhighvalues | average) / 1000 | number:'1.1-1'}} (newcomers)
+        median: {{(oldSchoolers | median) / 1000 | number:'1.1-1'}} (oldschool) vs {{(newComers | median) / 1000 | number:'1.1-1'}} (newcomers)
+    </div>
+
+    <div *ngIf="distributionsByStudy">
+        <h1>Interaction State Comparison Computer</h1>
+
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+
+                <ng-container *ngFor="let setting of stateComparisons.computer">
+                    <th>{{setting.setting.substr(15)}} ZI</th>
+                    <th>{{setting.setting.substr(15)}} ZO</th>
+                    <th>{{setting.setting.substr(15)}} P</th>
+                    <th>{{setting.setting.substr(15)}} I</th>
+                </ng-container>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr *ngFor="let distName of distNames">
+                <td>{{distToID[distName.substr(5)]}}</td>
+
+                <ng-container *ngFor="let setting of stateComparisons.computer">
+                    <td>
+                        {{(distributionsByStudy[setting.study][setting.setting][distName].zoomInTimes | filterhighvalues | average) / 1000 | number:'1.1-1'}}
+                    </td>
+                    <td>
+                        {{(distributionsByStudy[setting.study][setting.setting][distName].zoomOutTimes | filterhighvalues | average) / 1000 | number:'1.1-1'}}
+                    </td>
+                    <td>
+                        {{(distributionsByStudy[setting.study][setting.setting][distName].panTimes | filterhighvalues | average) / 1000 | number:'1.1-1'}}
+                    </td>
+                    <td>
+                        {{(distributionsByStudy[setting.study][setting.setting][distName].idleTimes | filterhighvalues | average) / 1000 | number:'1.1-1'}}
+                    </td>
+                </ng-container>
+            </tr>
+            </tbody>
+
+        </table>
+    </div>
+
+
+    <div *ngIf="comparisonDataLoaded">
+        <h1>Interaction Comparison Computer</h1>
+
+        <table>
+            <thead>
+            <tr>
+                <th>Distance</th>
+                <th *ngFor="let setting of interactionsComputer">{{setting.substr(15)}}</th>
+                <th *ngFor="let setting of interactionsComputer">{{setting.substr(15)}} Error</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr *ngFor="let distName of distNames">
+                <td>{{distName.substr(5)}}</td>
+                <td *ngFor="let setting of interactionsComputer">
+                    {{(interactionComparisonComputer[setting][distName] | filterhighvalues | average) / 1000 | number:'1.1-1'}}
+                    <!--(
+                    {{(interactionComparisonComputer[setting][distName] | filterhighvalues).length}}
+                    )-->
+                </td>
+                <td *ngFor="let setting of interactionsComputer">
+                    {{(interactionComparisonComputer[setting][distName] | filterhighvalues | stdeverror) / 1000 | number:'1.1-1'}}
+                </td>
+            </tr>
+            </tbody>
+
+        </table>
+    </div>
+
+
+    <div *ngIf="comparisonDataLoaded">
+        <h1>Interaction Comparison Mobile</h1>
+
+        <table>
+            <thead>
+            <tr>
+                <th>Distance</th>
+                <th *ngFor="let setting of interactionsMobile">{{setting.substr(15)}}</th>
+                <th *ngFor="let setting of interactionsMobile">{{setting.substr(15)}} Error</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr *ngFor="let distName of distNames">
+                <td>{{distName.substr(5)}}</td>
+                <td *ngFor="let setting of interactionsMobile">
+                    {{(interactionComparisonMobile[setting][distName] | filterhighvalues | average) / 1000 | number:'1.1-1'}}
+                    <!--(
+                    {{(interactionComparisonMobile[setting][distName] | filterhighvalues).length}}
+                    /
+                    {{(interactionComparisonMobile[setting][distName]).length}}
+                    )-->
+                </td>
+                <td *ngFor="let setting of interactionsMobile">
+                    {{(interactionComparisonMobile[setting][distName] | filterhighvalues | stdeverror) / 1000 | number:'1.1-1'}}
+                </td>
+            </tr>
+            </tbody>
+
+        </table>
+    </div>
+
+    <div *ngIf="differencesLoaded">
+        <h1>Interaction Differences Computer</h1>
+
+        <table>
+            <thead>
+            <tr>
+                <th>Distance</th>
+                <th *ngFor="let setting of interactionsComputerWithoutDefault">{{setting}}</th>
+                <th *ngFor="let setting of interactionsComputerWithoutDefault">{{setting}} Error</th>
+            </tr>
+            </thead>
+
+            <tbody>
+                <tr *ngFor="let distName of distNames">
+                    <td>{{distName.substr(5)}}</td>
+                    <td *ngFor="let setting of interactionsComputerWithoutDefault">
+                        {{(interactionDifferencesComputer[setting][distName] | filteroutextremevalues:((interactionComparisonComputer[setting][distName] | median) * -1):((interactionComparisonComputer[setting][distName] | median) * 1) | average) / 1000 | number:'1.1-1'}}
+                        <!--({{(interactionDifferencesComputer[setting][distName] | filteroutextremevalues:-40000:40000).length}})-->
+                    </td>
+                    <td *ngFor="let setting of interactionsComputerWithoutDefault">
+                        {{(interactionDifferencesComputer[setting][distName] | filteroutextremevalues:((interactionComparisonComputer[setting][distName] | median) * -1):((interactionComparisonComputer[setting][distName] | median) * 1) | stdeverror) / 1000 | number:'1.1-1'}}
+                    </td>
+                </tr>
+            </tbody>
+
+        </table>
+    </div>
+
+    <div *ngIf="differencesLoaded">
+        <h1>Interaction Differences Mobile</h1>
+
+        <table>
+            <thead>
+            <tr>
+                <th>Distance</th>
+                <th *ngFor="let setting of interactionsMobileWithoutDefault">{{setting}}</th>
+                <th *ngFor="let setting of interactionsMobileWithoutDefault">{{setting}} Error</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr *ngFor="let distName of distNames">
+                <td>{{distName.substr(5)}}</td>
+                <td *ngFor="let setting of interactionsMobileWithoutDefault">
+                    {{(interactionDifferencesMobile[setting][distName] | median) / 1000 | number:'1.1-1'}}
+                    <!--(
+                    {{(interactionDifferencesMobile[setting][distName] | filteroutextremevalues:-50000:((interactionComparisonMobile[setting][distName] | median) * 1.5)).length}}
+                    /
+                    {{(interactionDifferencesMobile[setting][distName]).length}}
+                    )-->
+                </td>
+                <td *ngFor="let setting of interactionsMobileWithoutDefault">
+                    {{(interactionDifferencesMobile[setting][distName] | filteroutextremevalues:((interactionComparisonMobile[setting][distName] | median) * -1):((interactionComparisonMobile[setting][distName] | median) * 1) | stdeverror) / 1000 | number:'1.1-1'}}
+                </td>
+            </tr>
+            </tbody>
+
+        </table>
+<!--
+        <h1>Interaction Differences Mobile (Formatted Table)</h1>
+
+        <table>
+            <thead>
+            <tr>
+                <th>Distance</th>
+                <th *ngFor="let setting of interactionsMobileWithoutDefault">{{setting.substr('vertical-dates-'.length)}}</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr *ngFor="let distName of distNames">
+                <td>{{distName.substr(5)}}</td>
+                <td *ngFor="let setting of interactionsMobileWithoutDefault">
+                    {{(interactionDifferencesMobile[setting][distName] | filteroutextremevalues:-40000:40000 | average) / 1000 | number:'1.1-1'}}
+                    $\pm$
+                    {{(interactionDifferencesMobile[setting][distName] | filteroutextremevalues:-40000:40000 | stdeverror) / 1000 | number:'1.1-1'}}
+                    &lt;!&ndash;({{(interactionDifferencesMobile[setting][distName]).length}}, {{(interactionDifferencesMobile[setting][distName] | filteroutextremevalues:-40000:40000).length}})&ndash;&gt;
+                </td>
+            </tr>
+            </tbody>
+
+        </table>-->
+    </div>
+
+    <div *ngIf="differencesLoaded">
+        <h1>Interaction Run Differences Mobile</h1>
+
+        <table>
+            <thead>
+            <tr>
+                <th>Target Number</th>
+                <th *ngFor="let setting of interactionsMobile">{{setting}}</th>
+                <!--<th *ngFor="let setting of interactionsMobileWithoutDefault">{{setting}} Error</th>-->
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr *ngFor="let targetNumber of (20 | numberToArray)">
+                <td>{{targetNumber}}</td>
+                <td *ngFor="let setting of interactionsMobile">
+                    <!--{{(interactionDifferencesMobile[setting][distName] | filteroutextremevalues:((interactionComparisonMobile[setting][distName] | median) * -1):((interactionComparisonMobile[setting][distName] | median) * 1) | average) / 1000 | number:'1.1-1'}}-->
+                    {{((interactionRunDiffMobile[setting][targetNumber] | filteroutextremevalues:-20000:20000) | average) / 1000 | number:'1.1-1'}}
+                    <!--(
+                    {{(interactionDifferencesMobile[setting][distName] | filteroutextremevalues:-50000:((interactionComparisonMobile[setting][distName] | median) * 1.5)).length}}
+                    /
+                    {{(interactionDifferencesMobile[setting][distName]).length}}
+                    )-->
+                </td><!--
+                <td>
+                    {{([interactionRunDiffMobile['vertical-dates-normalpan-pinchzoom'][targetNumber] | filteroutextremevalues:-30000:30000) | average] | average}}
+                </td>-->
+                <!--<td *ngFor="let setting of interactionsMobileWithoutDefault">
+                    {{(interactionDifferencesMobile[setting][distName] | filteroutextremevalues:((interactionComparisonMobile[setting][distName] | median) * -1):((interactionComparisonMobile[setting][distName] | median) * 1) | stdeverror) / 1000 | number:'1.1-1'}}
+                </td>-->
+            </tr>
+            </tbody>
+
+        </table>
+        <!--
+                <h1>Interaction Differences Mobile (Formatted Table)</h1>
+
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Distance</th>
+                        <th *ngFor="let setting of interactionsMobileWithoutDefault">{{setting.substr('vertical-dates-'.length)}}</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr *ngFor="let distName of distNames">
+                        <td>{{distName.substr(5)}}</td>
+                        <td *ngFor="let setting of interactionsMobileWithoutDefault">
+                            {{(interactionDifferencesMobile[setting][distName] | filteroutextremevalues:-40000:40000 | average) / 1000 | number:'1.1-1'}}
+                            $\pm$
+                            {{(interactionDifferencesMobile[setting][distName] | filteroutextremevalues:-40000:40000 | stdeverror) / 1000 | number:'1.1-1'}}
+                            &lt;!&ndash;({{(interactionDifferencesMobile[setting][distName]).length}}, {{(interactionDifferencesMobile[setting][distName] | filteroutextremevalues:-40000:40000).length}})&ndash;&gt;
+                        </td>
+                    </tr>
+                    </tbody>
+
+                </table>-->
+    </div>
+
+
+    <div>
+        <h1>DOM Speed Comparison</h1>
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>DOM Speed</th>
+                    <th *ngFor="let setting of interactionsMobile">{{setting}}</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr *ngFor="let data of initialZoomInByMethodDomSpeed">
+                    <td>{{data['domAppendRemovePerMs']}}</td>
+                    <td *ngFor="let setting of interactionsMobile">
+                        <span *ngIf="data[setting]&&data[setting]>0&&data[setting]<500000">{{data[setting] / 1000 | number:'1.0-0'}}</span>
+                    </td>
+                </tr>
+            </tbody>
+
+        </table>
+    </div>
+
+</div>

@@ -1,0 +1,141 @@
+<div class="container study" #container style="position:relative" [class.vertical]="vertical" [class.horizontal]="!vertical">
+
+    <a class="reset button" *ngIf="comboSelection&&combo" (click)="resetCombo()">Back</a>
+
+    <div *ngIf="!combo&&comboSelection">
+        <p>Welcome to this study! Choose one of the many experiment branches:</p>
+
+        <button *ngFor="let combo of combinations" (click)="setCombo(combo)" class="combination" [class.disabled]="(!mobile&&!combo.pc)||(mobile&&!combo.mobile)">
+            {{combo.title}} (<span class="platforms"><span *ngIf="combo.pc">PC</span><span *ngIf="combo.mobile">Mobile</span></span>)
+        </button>
+    </div>
+
+    <div *ngIf="!isOnCombos&&combo&&!hasCompletelyFinished" class="interaction-disabled">
+        <h1>{{combo.title}}</h1>
+        <span class="step-indicator">
+            <span class="step-indicator-label">Setting {{currentSettingsIndex+1}} / {{currentSettings.length}}</span>
+            <div class="progress-bar" [style.width]="progress * 100 + '%'"></div>
+        </span>
+        <!--<span class="step-indicator">Method {{combinationIndex+1}} out of {{combinations.length}}</span>-->
+
+        <p class="combo-help-text" style="">
+            <!--<span *ngIf="combinationIndex==0&&!readyForTasks">The timeline you will be interacting with is below.</span>-->
+            For this method, {{combo.description}}
+            <span *ngIf="!readyForTasks">Feel free to explore until you are ready for the tasks.</span>
+        </p>
+
+
+        <div class="targets" [class.vertical]="vertical" [class.horizontal]="!vertical">
+            <span class="target" [class.success]="currentTarget==selectedTarget" *ngIf="readyForTasks">
+                Target: <br *ngIf="vertical" />
+                <span *ngIf="currentTarget">
+                    <!--{{currentTarget}}-->
+                    <!--<span *ngIf="!numberMode">{{currentTarget*DATE_SCALE | date:'y MMM d, h:mm a'}}</span>-->
+                    <span *ngIf="!numberMode">{{numberToDateString(currentTarget)}}</span>
+                    <span *ngIf="numberMode">{{currentTarget | number}}</span>
+                </span>
+            </span>
+            <span *ngIf="currentTarget==selectedTarget" class="checkmark">✓</span>
+            <!--<span *ngFor="let finishedTarget of finishedTargets" class="target finished">{{finishedTarget*DATE_SCALE | date:'y MMM d, h:mm a'}}</span>-->
+        </div>
+    </div>
+
+    <!--<button (click)="createRandomTarget()" *ngIf="!task_running">Do task!</button>
+    <span *ngIf="task_running||task_ran" class="target">
+        Target:
+        <span [style.color]="taskSuccess ? '#007700' : '#000'">
+            <span *ngIf="!numberMode">{{taskTarget*60000 | date:'MMM d, y, h:m a'}}</span>
+            <span *ngIf="numberMode">{{taskTarget | number}}</span>
+        </span>
+    </span>
+
+    <button (click)="confirmSelection()" *ngIf="task_running&&taskSelection!=-1">Confirm</button>-->
+
+    <logger *ngIf="!hasCompletelyFinished" [class.interaction-disabled]="interactionDisabled" [targetClassName]="'timelinecontainer'" [logsRequested]="logsRequested" (logsReady)="saveLogs($event)" [replayLogs]="replayLogs">
+        <numbervis *ngIf="loadVis" (zoomedIn)="zoomedIn($event)" (zoomedOut)="zoomedOut($event)" (panned)="panned($event)" [resetSelection]="resetSelection" [target]="currentTarget" [class.hidden]="!showVis" (targetClicked)="targetClicked($event)" [vertical]="vertical" [zoomModes]="zoomModes" [lastNumber]="end" [numberMode]="numberMode" [width]="width" [height]="height" [margin]="margin" [resetScale]="resetScale"></numbervis>
+    </logger>
+
+    <div *ngIf="hasCompletelyFinished" class="scrollable-content">
+
+        <h1>Thank you</h1>
+
+        <p>Many thanks for participating in the Study of Zooming Methods! <span *ngIf="showForm">To finish, please fill out this quick anonymous survey:</span></p>
+
+        <form *ngIf="showForm">
+            <p>
+                <b>What's your gender?</b><br />
+                <label><input type="radio" [checked]="formdata.gender==='female'" (change)="formdata.gender='female'" [value]="'female'"> Female</label>
+                <label><input type="radio" [checked]="formdata.gender==='male'" (change)="formdata.gender='male'" [value]="'male'"> Male</label>
+                <label><input type="radio" [checked]="formdata.gender==='other'" (change)="formdata.gender='other'" [value]="'other'"> Other</label>
+                <label><input type="radio" [checked]="formdata.gender==='not-disclosed'" (change)="formdata.gender='not-disclosed'" [value]="'not-disclosed'"> Prefer Not To Disclose</label>
+            </p>
+
+            <p>
+                <b>How old are you?</b><br />
+                <label><input type="radio" [checked]="formdata.age===18" (change)="formdata.age=18" [value]="18"> 18-24</label>
+                <label><input type="radio" [checked]="formdata.age===25" (change)="formdata.age=25" [value]="25"> 25-34</label>
+                <label><input type="radio" [checked]="formdata.age===35" (change)="formdata.age=35" [value]="35"> 35-44</label>
+                <label><input type="radio" [checked]="formdata.age===45" (change)="formdata.age=45" [value]="45"> 45-54</label>
+                <label><input type="radio" [checked]="formdata.age===55" (change)="formdata.age=55" [value]="55"> 55 and older</label>
+                <label><input type="radio" [checked]="formdata.age===-1" (change)="formdata.age=-1" [value]="'not-disclosed'"> Prefer Not To Disclose</label>
+            </p>
+
+            <p>
+                <b>On average, how much time do you spend per day on personal computers?</b><br />
+                <label><input type="radio" [checked]="formdata['pc-use']===0" (change)="formdata['pc-use']=0" [value]="0"> 0-2 hours</label>
+                <label><input type="radio" [checked]="formdata['pc-use']===2" (change)="formdata['pc-use']=2" [value]="2"> 2-4 hours</label>
+                <label><input type="radio" [checked]="formdata['pc-use']===4" (change)="formdata['pc-use']=4" [value]="4"> 4-8 hours</label>
+                <label><input type="radio" [checked]="formdata['pc-use']===8" (change)="formdata['pc-use']=8" [value]="8"> 8-12 hours</label>
+                <label><input type="radio" [checked]="formdata['pc-use']===12" (change)="formdata['pc-use']=12" [value]="12"> 12 hours or more</label>
+                <label><input type="radio" [checked]="formdata['pc-use']===-1" (change)="formdata['pc-use']=-1" [value]="-1"> Prefer Not To Disclose</label>
+            </p>
+
+            <p>
+                <b>On average, how much time do you spend per day on mobile devices such as smart phones and tablets?</b><br />
+                <label><input type="radio" [checked]="formdata['mobile-use']===0" (change)="formdata['mobile-use']=0" [value]="0"> 0-2 hours</label>
+                <label><input type="radio" [checked]="formdata['mobile-use']===2" (change)="formdata['mobile-use']=2" [value]="2"> 2-4 hours</label>
+                <label><input type="radio" [checked]="formdata['mobile-use']===4" (change)="formdata['mobile-use']=4" [value]="4"> 4-8 hours</label>
+                <label><input type="radio" [checked]="formdata['mobile-use']===8" (change)="formdata['mobile-use']=8" [value]="8"> 8-12 hours</label>
+                <label><input type="radio" [checked]="formdata['mobile-use']===12" (change)="formdata['mobile-use']=12" [value]="12"> 12 hours or more</label>
+                <label><input type="radio" [checked]="formdata['mobile-use']===-1" (change)="formdata['mobile-use']=-1" [value]="-1"> Prefer Not To Disclose</label>
+            </p>
+        </form>
+
+
+
+        <p><span *ngIf="showForm">We would be grateful for any feedback you'd like to leave:</span></p>
+
+        <div *ngIf="showForm">
+            <textarea [(ngModel)]="formdata.feedback"></textarea>
+
+            <button class="primary" [class.disabled]="formdata.gender===''||formdata.age===-2||formdata['pc-use']===-2||formdata['mobile-use']===-2" (click)="submitForm();showForm=false;showCode=true;">Submit</button>
+        </div>
+        <div *ngIf="showCode">
+            <p>Your Code is below. Please copy it and then paste it in the Amazon Mechanical Turk Window. We will review your submission within two days.</p>
+
+            <br />
+            <pre><code>{{studyRunId}}</code></pre>
+        </div>
+    </div>
+
+    <span *ngIf="!isOnCombos&&!hasCompletelyFinished&&readyForTasks" class="run-indicator">
+        <!--<span *ngIf="currentRunPerBranch<NUMBER_TEST_RUNS">Test Run {{currentRunPerBranch+1}} / {{NUMBER_TEST_RUNS}}</span>
+        <span *ngIf="currentRunPerBranch>=NUMBER_TEST_RUNS">Real Run {{currentRunPerBranch+1-NUMBER_TEST_RUNS}} / {{NUMBER_MAIN_RUNS}}</span>-->
+        Run {{currentRunPerBranch+1}} / {{NUMBER_RUNS_PER_SETTING}}
+    </span>
+
+    <button *ngIf="!isOnCombos" class="report-bug" (click)="reportBug()">Report Bug</button>
+
+    <div class="buttons" *ngIf="!hasCompletelyFinished && !isOnCombos">
+        <!--{{readyForTasks}} {{test_running}} {{waiting}} {{hasNextTarget}}-->
+        <span *ngIf="test_running" class="target-indicator">Target {{finishedDistances.length+1}} / {{targetDistances.length}}</span>
+
+        <button class="primary" (click)="startTests()" *ngIf="!readyForTasks&&!test_ran&&!test_running">Run Test Run</button>
+        <button class="primary" (click)="setNextCurrentTarget()" *ngIf="readyForTasks&&!test_running&&!waiting&&hasNextTarget">Next Target</button>
+        <button class="primary" (click)="nextRun()" *ngIf="readyForTasks&&!test_running&&!waiting&&!hasNextTarget&&hasNextRun">Start Real Run {{currentRunPerBranch-NUMBER_TEST_RUNS+2}} of {{NUMBER_MAIN_RUNS}}</button>
+        <button class="primary next-setting" (click)="nextSetting()" *ngIf="readyForTasks&&!test_running&&!waiting&&!hasNextTarget&&!hasNextRun&&hasNextSetting">Next Setting</button>
+        <button class="primary" (click)="finish()" *ngIf="hasAllTasksFinished&&!hasCompletelyFinished">Finish & Get Code!</button>
+    </div>
+
+</div>
+

@@ -1,0 +1,105 @@
+<div class="scrollable-content" style="user-select: text; overflow-x: auto; width: 99%">
+
+    <div class="logs">
+        <div *ngFor="let study of studies">
+            <h1><button (click)="showLogsByStudy[study]=!showLogsByStudy[study]">{{study}} Logs</button></h1>
+            <table *ngIf="showLogsByStudy[study]">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>ID</th>
+                    <th>Start</th>
+                    <th>Duration</th>
+                    <th>Resolution</th>
+                    <th>Agent</th>
+                    <th>Worker ID</th>
+                    <th>Feedback</th>
+                    <th>Settings</th>
+                    <th>Runs</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let metadataId of getMetadataIdsByStudy(study); let i=index">
+                    <td>{{i}}</td>
+                    <td><a (click)="selectExperiment(metadataId)" class="experiment">{{metadataId}}</a></td>
+                    <td>{{metaDataById[metadataId].start | date:'short'}}</td>
+                    <td>{{metaDataById[metadataId].duration / 60000 | number:'1.1-1'}}<!--{{metaDataById[metadataId].duration | date:'mm:ss'}}--></td>
+                    <td>{{metaDataById[metadataId].browserInfo.clientWidth}} x {{metaDataById[metadataId].browserInfo.clientHeight}}</td>
+                    <td><a [title]="metaDataById[metadataId].browserInfo.userAgent">{{metaDataById[metadataId].browserInfo.userAgent | truncate:25}}</a></td>
+                    <td>{{metaDataById[metadataId].mturkId}}</td>
+                    <td>{{metaDataById[metadataId].feedback}}</td>
+                    <td>
+                                <span *ngIf="dataById[metadataId]">
+                                <a *ngFor="let setting of keys(dataById[metadataId])" class="setting" [class.active]="activeExperimentId==metadataId&&activeSetting==setting" (click)="selectSetting(metadataId, activeSetting=setting)">{{setting}}</a>
+                                </span>
+                    </td>
+                    <!--<td>{{log | json}}</td>-->
+                    <td><!--{{dataById[metadataId].runsBySetting | json}}-->
+                        <div *ngIf="activeSetting&&activeExperimentId==metadataId&&dataById[metadataId]">
+                            <a *ngFor="let run of keys(dataById[metadataId][activeSetting])" class="run" [class.active]="activeExperimentId==metadataId&&activeRun==run" (click)="selectRun(metadataId, activeSetting, run)">{{run}}</a>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!--
+
+        <h2 (click)="statsHidden=!statsHidden">Statistical Distribution of Interaction Methods</h2>
+        <div *ngIf="!statsHidden">
+            <div *ngFor="let dist of distData">
+
+                Distance <span style="width: 70px; display: inline-block">{{dist.dist}}</span>:
+
+                <div class="bar">
+                    <div class="bar-part IDLE" [style.width]="dist.totalIdleTime  / 1000 * barScalingFactor + 'px'"></div>
+                    <div class="bar-part PAN" [style.width]="dist.totalPanTime  / 1000 * barScalingFactor + 'px'"></div>
+                    <div class="bar-part ZOOM_OUT" [style.width]="dist.totalZoomOutTime  / 1000 * barScalingFactor + 'px'"></div>
+                    <div class="bar-part ZOOM_IN" [style.width]="dist.totalZoomInTime  / 1000 * barScalingFactor + 'px'"></div>
+                </div>
+
+            </div>
+        </div>
+        -->
+
+        <div *ngIf="showIndividualLog&&currentLogValues">
+            <h2>
+                Analysis of Individual Log
+                <button *ngIf="showReplay" (click)="playNextReplay()">Show Next Replay</button>
+                <button *ngIf="showReplay" (click)="stopReplay()">Stop Replay</button>
+                <button *ngIf="!showReplay" (click)="replay()">Replay</button>
+                <span *ngIf="showReplay&&currentLog[replayDist]" style="font-size: 12pt">Current Target: <span *ngIf="numberMode">{{currentLog[replayDist].target}}</span><span *ngIf="!numberMode">{{currentLog[replayDist].target * DATE_SCALE | date:'y MMM d, h:mm a'}}</span></span>
+            </h2>
+
+            <!--<a *ngFor="let taskLog of taskLogData" class="tasklog" (click)="currentLogData=taskLog">{{taskLog.$key | date:'y MMM d, h:mm a'}}</a>-->
+
+            <div *ngIf="showReplay" class="show-replay-wrap">
+                <logger [targetClassName]="'timelinecontainer'" [replayLogs]="replayLogs">
+                    <numbervis [target]="currentLog[replayDist]?currentLog[replayDist].target:0" [vertical]="vertical" [zoomModes]="zoomModes" [lastNumber]="end" [numberMode]="numberMode" [width]="width" [height]="height" [margin]="margin"></numbervis>
+                </logger>
+            </div>
+
+            <div *ngIf="currentLogValues.length">
+
+                Total time: {{totalSetTaskTime() / 1000 | round}}s
+
+                <div *ngFor="let log of currentLogValues">
+                    Distance <span style="width: 70px; display: inline-block">{{log.distance}}</span>:
+
+                    <div class="bar" style="position:relative" [style.width]="log.taskTime / 1000 * barScalingFactor + 'px'">
+                        <div *ngFor="let status of log.statusTimeline" class="bar-part {{status.state}}" [style.width]="status.duration / 1000 * barScalingFactor + 'px'">
+
+                        </div>
+                        <svg style="width:100%;height:100%;position:absolute;left:0;top:0">
+                            <svg:path [attr.d]="currentLogRangeTimeline['dist-'+log.distance]" stroke="black" stroke-width="3" fill-opacity="0" />
+                        </svg>
+                    </div>
+                    {{log.taskTime / 1000 | round }}s
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>

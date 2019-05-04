@@ -1,0 +1,42 @@
+zoomable {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.zoom-viz {
+  position: absolute;
+  pointer-events: none;
+}
+
+.brush {
+  position: absolute;
+  background: #cc2533;
+  /*border: 1px solid #c66;*/
+  opacity: 0.5;
+}
+
+.brush-x {
+  height: 160px;
+}
+
+.brush-y {
+  width: 160px;
+  opacity: 0.5;
+}
+
+.zoom-position-indicator {
+  display: block;
+  position: absolute;
+  background: #cc2533;
+  pointer-events: none;
+}
+
+.zoom-position-indicator-y {
+  width: 1px;
+  height: 100px;
+}
+.zoom-position-indicator-x {
+  width: 160px;
+  height: 1px;
+}

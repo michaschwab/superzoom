@@ -1,0 +1,103 @@
+
+<zoomable [enabledModes]="zoomModes"
+          (onPanned)="onPanned($event)"
+          (onZoomed)="onZoomed($event)"
+          (resetAbsoluteScale)="resetAbsoluteScale()">
+
+  <codable-timeline
+                    #timeline class="circle-timeline"
+                    (onReady)="onTimelineReady()"
+                    (onVisibleTimesChange)="onVisibleTimesChange($event)"
+                    [height]="height" [width]="width"
+                    [xStart]="start" [xEnd]="end"
+                    [margin]="margin" [vertical]="vertical">
+
+    <!--<svg:g *ngFor="let number of fillerNumbers" class="circle-numbers">
+      <svg:g *ngIf="number>start&&number<end" [attr.transform]="'translate('+timeline.x(number)+','+timeline.y(number)+')'">
+
+      </svg:g>
+    </svg:g>-->
+
+
+    <svg:g [class.vertical]="vertical" [class.horizontal]="!vertical">
+
+
+        <svg:g class="rectnumbers" [class.not-tiny]="end-start<200">
+          <svg:g *ngFor="let number of rectNumbers" class="circle-numbers" [class.selected]="number==taskSelection" [class.correctlySelected]="number==taskSelection&&target===taskSelection" [attr.transform]="'translate('+timeline.x(number)+','+timeline.y(number)+')'">
+            <svg:g *ngIf="(!vertical&&timeline.x(number+1)-timeline.x(number)>=1)||(vertical&&timeline.y(number+1)-timeline.y(number)>=1)">
+              <svg:rect *ngIf="!vertical" y="-30" [attr.height]="50" [attr.x]="-1 * (timeline.x(number+1)-timeline.x(number))/2" [attr.width]="timeline.x(number+1)-timeline.x(number)" (click)="onTargetClicked(number, $event)"></svg:rect>
+              <svg:rect  *ngIf="vertical"  x="-30" [attr.width]="50" [attr.y]="-1 * (timeline.y(number+1)-timeline.y(number))/2" [attr.height]="timeline.y(number+1)-timeline.y(number)" (click)="onTargetClicked(number, $event)"></svg:rect>
+            </svg:g>
+          </svg:g>
+        </svg:g>
+
+        <svg:g class="visiblenumbers">
+          <svg:g *ngFor="let number of visibleNumbers" class="circle-numbers visible-numbers" [class.selected]="number==taskSelection" [attr.transform]="'translate('+timeline.x(number)+','+timeline.y(number)+')'">
+            <!--<svg:circle [attr.r]="visibleRadii[number]" (click)="onTargetClicked(number, $event)"></svg:circle>-->
+            <!--<svg:circle *ngIf="end-start<14" [attr.r]="22" (click)="onTargetClicked(number, $event)"></svg:circle>-->
+            <!--<svg:g *ngIf="end-start<14&&visibleNumbers.length/(end-start)>0.7">
+              <svg:rect *ngIf="!vertical" [attr.opacity]="opacities[number]" y="-30" [attr.height]="60" [attr.x]="-1 * (timeline.x(number+1)-timeline.x(number))/2" [attr.width]="timeline.x(number+1)-timeline.x(number) - 1" (click)="onTargetClicked(number, $event)"></svg:rect>
+              <svg:rect *ngIf="vertical" [attr.opacity]="opacities[number]" x="-40" [attr.width]="80" [attr.y]="-1 * (timeline.y(number+1)-timeline.y(number))/2" [attr.height]="timeline.y(number+1)-timeline.y(number) - 1" (click)="onTargetClicked(number, $event)"></svg:rect>
+            </svg:g>-->
+            <svg:line *ngIf="!isVertical" x1="0" x2="0" y1="20" y2="40" stroke="#000"></svg:line>
+            <svg:line  *ngIf="isVertical" x1="20" x2="40" y1="0" y2="0" stroke="#000"></svg:line>
+            <svg:text [attr.dx]="isVertical?40:0" [attr.dy]="isVertical?0:60" [attr.opacity]="opacities[number]" (click)="onTargetClicked(number, $event)">{{number | number:'1.0-0'}}</svg:text>
+          </svg:g>
+        </svg:g>
+
+        <svg:g class="visibledates">
+            <svg:g class="rects">
+                <svg:g *ngFor="let dateObj of visibleDateIndicatorObjects; trackBy: dateTrack" class="date" [class.deleted]="dateObj.deleted" [class.minute]="dateObj.type=='minute'" [class.selected]="dateObj.number==taskSelection" [class.correctlySelected]="dateObj.number==taskSelection&&target===taskSelection" [attr.transform]="vertical?'translate('+(timeline.x(dateObj.roundedStart)+60)+','+timeline.y(dateObj.roundedStart)+')' : 'translate('+(timeline.x(dateObj.roundedStart))+','+(timeline.y(dateObj.roundedStart)+35)+')'">
+                    <svg:rect *ngIf="timeline.primaryAxis(dateObj.roundedEnd)-timeline.primaryAxis(dateObj.roundedStart)>0" (click)="onTargetClicked(dateObj.number, $event, dateObj)" [attr.width]="timeline.x(dateObj.roundedEnd)-timeline.x(dateObj.roundedStart)" [attr.height]="timeline.y(dateObj.roundedEnd)-timeline.y(dateObj.roundedStart)"></svg:rect>
+                    <!--<svg:text>{{dateObj.number}}</svg:text>-->
+                </svg:g>
+            </svg:g>
+            <g class="texts">
+                <svg:g *ngFor="let dateObj of visibleDateObjects; trackBy: dateTrack" class="date" [class.deleted]="dateObj.deleted" [class.minute]="dateObj.type=='minute'" [class.selected]="dateObj.number==taskSelection" [attr.transform]="vertical?'translate('+(timeline.x(dateObj.roundedStart)+100)+','+timeline.y(dateObj.roundedStart)+')' : 'translate('+(timeline.x(dateObj.roundedStart))+','+(timeline.y(dateObj.roundedStart)+55)+')'">
+                    <svg:line *ngIf="dateObj.short&&!isVertical" [attr.x1]="dateObj.labelPosFactor*(timeline.x(dateObj.roundedEnd)-timeline.x(dateObj.roundedStart))/2" [attr.x2]="dateObj.labelPosFactor*(timeline.x(dateObj.roundedEnd)-timeline.x(dateObj.roundedStart))/2" y1="-30" y2="-10" stroke="#000"></svg:line>
+                    <svg:line *ngIf="dateObj.short&&isVertical"  [attr.y1]="dateObj.labelPosFactor*(timeline.y(dateObj.roundedEnd)-timeline.y(dateObj.roundedStart))/2" [attr.y2]="dateObj.labelPosFactor*(timeline.y(dateObj.roundedEnd)-timeline.y(dateObj.roundedStart))/2"  x1="-20" x2="0" stroke="#000"></svg:line>
+                    <svg:text [attr.dx]="dateObj.labelPosFactor*(timeline.x(dateObj.roundedEnd)-timeline.x(dateObj.roundedStart))/2" [attr.dy]="dateObj.labelPosFactor*(timeline.y(dateObj.roundedEnd)-timeline.y(dateObj.roundedStart))/2">{{dateObj.short}}</svg:text>
+                </svg:g>
+            </g>
+        </svg:g>
+        <svg:g class="visibleparentdates">
+            <svg:g *ngFor="let dateObj of visibleParentDateObjects" class="circle-numbers" [class.deleted]="dateObj.deleted" [attr.transform]="vertical?'translate('+(timeline.x(cappedNumber(dateObj.start))-30)+','+timeline.y(cappedNumber(dateObj.start))+')' : 'translate('+(timeline.x(cappedNumber(dateObj.start)))+','+timeline.y(cappedNumber(dateObj.start))+')'">
+                <svg:g *ngIf="timeline.primaryAxis(cappedNumber(dateObj.end))-timeline.primaryAxis(cappedNumber(dateObj.start))>0&&dateObj.end>start&&dateObj.start<end">
+                    <svg:rect [attr.width]="timeline.x(cappedNumber(dateObj.end))-timeline.x(cappedNumber(dateObj.start))" [attr.height]="timeline.y(cappedNumber(dateObj.end))-timeline.y(cappedNumber(dateObj.start))"></svg:rect>
+                    <svg:g [attr.transform]="'translate('+(timeline.x(cappedNumber(dateObj.end))-timeline.x(cappedNumber(dateObj.start)))/2 + ', ' + (timeline.y(cappedNumber(dateObj.end))-timeline.y(cappedNumber(dateObj.start)))/2 + ')'">
+                        <svg:text *ngIf="vertical" [attr.dy]="vertical?5:0" [attr.y]="vertical?dateObj.titles.length*-10:-30">
+                            <svg:tspan *ngFor="let title of dateObj.titles" [attr.dy]="vertical?20:0" x="-20">
+                                {{title}}
+                            </svg:tspan>
+                        </svg:text>
+                        <svg:text *ngIf="!vertical" [attr.dy]="vertical?5:0" [attr.y]="vertical?dateObj.titles.length*-10:-30">
+                            {{dateObj.titles.join(' ')}}
+                        </svg:text>
+                    </svg:g>
+                </svg:g>
+            </svg:g>
+        </svg:g>
+
+        <svg:g *ngIf="vertical" class="edge-info">
+          <svg:rect x="0" [attr.y]="0" [attr.height]="margin.top" [attr.width]="200" fill="#fff"></svg:rect>
+          <svg:rect x="0" [attr.y]="height-margin.bottom" [attr.height]="margin.bottom" [attr.width]="200" fill="#fff"></svg:rect>
+          <svg:line [attr.x1]="0" [attr.x2]="200" [attr.y1]="margin.top" [attr.y2]="margin.top" stroke="#000"></svg:line>
+          <svg:line [attr.x1]="0" [attr.x2]="200" [attr.y1]="height-margin.bottom" [attr.y2]="height-margin.bottom" stroke="#000"></svg:line>
+        </svg:g>
+
+        <svg:g *ngIf="!vertical">
+          <svg:rect x="0" y="0" [attr.height]="120" [attr.width]="margin.left" fill="#fff"></svg:rect>
+          <svg:rect [attr.x]="width-margin.right" y="0" [attr.height]="120" [attr.width]="margin.right" fill="#fff"></svg:rect>
+          <svg:line [attr.x1]="margin.left" [attr.x2]="margin.left" [attr.y1]="0" [attr.y2]="120" stroke="#000"></svg:line>
+          <svg:line [attr.x1]="width-margin.right" [attr.x2]="width-margin.right" [attr.y1]="0" [attr.y2]="120" stroke="#000"></svg:line>
+        </svg:g>
+
+    </svg:g>
+
+  </codable-timeline>
+
+</zoomable>
+<!--
+
+<span style="position: absolute; top: 230px">{{taskSelection}} {{taskSelection*60000 | date:'MMM d, y, h:mm a'}}</span>
+-->

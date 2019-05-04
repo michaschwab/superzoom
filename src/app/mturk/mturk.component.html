@@ -1,0 +1,158 @@
+<div class="landscape-blocker" *ngIf="mobileRequested&&!mobile">
+    Please use a smart phone or request a HIT for the desktop version of this study.
+</div>
+
+<div class="landscape-blocker" *ngIf="!mobileRequested&&mobile">
+    Please use a computer or request a HIT for the smart phone version of this study.
+</div>
+
+<div class="landscape-blocker" *ngIf="isTablet">
+    Please use a smart phone instead of a tablet for this study.
+</div>
+
+
+<div class="landscape-blocker" *ngIf="isiPhone">
+    We're sorry, but we don't allow iPhones for this study because of an Apple policy.
+</div>
+
+
+<div class="landscape-blocker" *ngIf="browser.name!=='Chrome'">
+    Please use the Google Chrome browser for this study instead of {{browser.name}} {{browser.version}}.
+</div>
+
+
+<div class="landscape-blocker" *ngIf="windowWidth<1000&&windowWidth>windowHeight">
+    Please use your device in portrait mode for this study.
+</div>
+
+
+<div class="container" #container style="position:relative" *ngIf="!studyBegun&&study&&currentSettingsNumbers">
+
+    <h1>{{study.title}}</h1>
+
+    <span class="step-indicator">Intro<span class="pc-only">duction Step</span> {{step+1}} <span class="pc-only">out of</span><span class="mobile-only">/</span> {{stepKeys.length}}</span>
+
+    <div *ngIf="isCurrentStep(steps.WELCOME)" class="scrollable-content">
+        <h2>Welcome</h2>
+        <p>Welcome to this study on timeline interactions! In this experiment, you will go through a set of tasks in which we ask you to navigate to a target on a timeline.
+            The experiment will take about <span *ngIf="mobile">{{study.duration.mobile}}</span><span *ngIf="!mobile">{{study.duration.computer}}</span> minutes and we will compensate you $<span *ngIf="mobile">{{study.pay.mobile}}</span><span *ngIf="!mobile">{{study.pay.computer}}</span>.</p>
+
+        Each of our studies can only be completed once per person. If you submit multiple HITs, you will only paid for the first one. If you have done {{study.title}} before (either on desktop or on smart phone), please return the HIT.
+
+        <p *ngIf="currentSettingsNumbers['pc']['current']>=currentSettingsNumbers['pc']['max']&&currentSettingsNumbers['mobile']['current']>=currentSettingsNumbers['mobile']['max']" class="error">
+            Unfortunately we are currently not looking for more participants. Please check back in later!
+        </p>
+        <span *ngIf="currentSettingsNumbers['pc']['current']<currentSettingsNumbers['pc']['max']||currentSettingsNumbers['mobile']['current']<currentSettingsNumbers['mobile']['max']">
+            <p *ngIf="!canContinue&&!mobile" class="error">
+                <!--If you have a smart phone, <b>please open this website using your smart phone</b>
+                as we have enough data from desktop users.-->
+                Unfortunately, we currently have enough data from desktop users.
+            </p>
+            <p *ngIf="!canContinue&&mobile" class="error">
+                <!--<b>Please open this website using your PC</b>
+                as we have enough data from smartphone users.-->
+                Unfortunately, we currently have enough data from smart phone users.
+            </p>
+            <p *ngIf="canContinue">
+                <!--<span *ngIf="mobile">We thank you for running this on your phone.</span>-->
+                <!--<span *ngIf="!mobile&&currentSettingsNumbers['mobile']['current']<currentSettingsNumbers['mobile']['max']">
+                    If you have a smart phone, <b>please consider opening this website using your smart phone</b>.
+                    Otherwise, you can continue in the browser.
+                </span>-->
+                Please continue to the consent form if you would like to participate.
+            </p>
+        </span>
+
+        <div class="next-step-wrap">
+            <button class="primary" [class.disabled]="!canContinue" (click)="step=canContinue?step+1:step">Next</button>
+        </div>
+    </div>
+
+    <div *ngIf="isCurrentStep(steps.IRB)" class="scrollable-content informed-consent">
+        <h2>Statement of Informed Consent</h2>
+
+        <b>Northeastern University, Department of</b>: Computer Science (CCIS)<br />
+        <b>Name of Investigators</b>: Michelle Borkin, Michail Schwab, Aditeya Pandey<br />
+        <b>Title of Project</b>: Picture Penguin - Multi Faceted Mobile Photo Exploration - Amended for the SuperZoom Mechanical Turk Study
+
+        <ol>
+            <li><b>Purpose of research</b>: We would like to invite you to take part in a research project. The purpose of this research is to study different interaction techniques for navigating timelines and other linear visualizations.</li>
+            <li><b>You must be at least 18 years old to be in this research project.</b></li>
+            <li><b>Tasks</b>: The study can be completed from home and will take about <span *ngIf="mobile">{{study.duration.mobile}}</span><span *ngIf="!mobile">{{study.duration.computer}}</span> minutes. If you decide to take part in this study, we will ask you to complete navigation tasks using a website with sample timelines. We will also ask you for feedback about the different methods.</li>
+            <li><b>Recording</b>: During this experiment we will record your mouse and finger interactions with the website. No identifying information about you will be included in the recording (i.e., your name will never be associated with the recorded material).</li>
+            <li><b>Risks</b>: There are no anticipated risks associated with participating in this study.</li>
+            <li><b>There are no direct benefits to you for participating in the study</b>. However, your answers may help us to learn the best practices of creating interactions for multi-scale visualizations.</li>
+            <li><b>Participation and withdrawal</b>: Your participation in this study is completely voluntary, and you may withdraw at any time without penalty. You may skip any questions/tasks that you do not want to complete.</li>
+            <li><b>Confidentiality</b>: Your participation in this study will remain confidential, and your identity will not be stored with your data. Your responses will be assigned a randomized number. The only individually-identifying data we receive from Mechanical Turk are your unique identifier and your country. Your data are also stored on Mechanical Turk's servers, and the data there are subject to the Amazon Mechanical Turk Privacy Notice and Participation Agreement of Information Security via phone at 617-373-7901, or via email at <a href="mailto:privacy@neu.edu">privacy@neu.edu</a>.</li>
+            <li><b>Compensation</b>: You will receive $<span *ngIf="mobile">{{study.pay.mobile}}</span><span *ngIf="!mobile">{{study.pay.computer}}</span> for completing the HIT and participating in the study paid through Amazon Mechanical Turk.</li>
+            <li><b>Researcher Contact Information</b>: If you have any questions about this study, please feel free to contact (Michail Schwab: <a href="mailto:schwab.m@husky.neu.edu">schwab.m@husky.neu.edu</a>, 617-682-5687), the person mainly responsible for the research.</li>
+            <li><b>Faculty Contact Information</b>: You can also contact (Michelle Borkin: m.borkin@northeastern.edu, 617-373-6355), the Principal Investigator.</li>
+        </ol>
+
+        <b>If you have any questions about your rights in this research</b>, you may contact Nan C.
+        Regina, Director, Human Subject Research Protection, Mail Stop: 560-177, 360 Huntington
+        Avenue, Northeastern University, Boston, MA 02115. Tel: 617.373.4588, Email:
+        <a href="mailto:n.regina@northeastern.edu">n.regina@northeastern.edu</a>. You may call anonymously if you wish. This study has been
+        approved by the Northeastern University Institutional Review Board (#17-05-12).
+
+        By clicking on the “accept” button below you are indicating that you consent to participate in this
+        study. Please print out a copy of this consent form for your records.
+
+        <br /><br />
+
+        <div class="next-step-wrap">
+            <button (click)="step=step-1">Back</button>
+            <button class="primary" (click)="step=step+1">Accept</button>
+        </div>
+    </div>
+
+    <div *ngIf="isCurrentStep(steps.INFO_SETS)" class="scrollable-content">
+        <h2>Navigation</h2>
+
+        <p>During the experiment, you will navigate a timeline to a target by zooming and panning.
+            When you think you have found the target, clicking it will reveal whether you are correct by showing green for success,
+            and blue if you need to keep looking.
+
+            An example is shown below:
+        </p>
+<!--
+
+        <p>We will prompt you with different targets, such as <code>{{1000009*DATE_SCALE | date:'y MMM d, h:mm a'}}</code>. Your task is to zoom in to the target minute and click it. Once you have clicked a target, we will ask you to move to 9 closeby targets. You can move there as you like, such as by panning, or zooming out and zooming back in. Together, this makes one set of tasks.</p>
+-->
+
+        <p></p>
+	<video autoplay muted  class="intro-video">
+		<source src="assets/horizontal-dates-scrollwheel.mp4" type="video/mp4" />
+	</video>
+
+
+        <div class="next-step-wrap">
+            <button (click)="step=step-1">Back</button>
+            <button class="primary" (click)="step=step+1">Next</button>
+        </div>
+    </div>
+
+    <div *ngIf="isCurrentStep(steps.INFO_METHODS)" class="scrollable-content">
+        <h2>Experiment</h2>
+
+        <p>You will go through <span *ngIf="mobile">{{mobileSettings.length}}</span><span *ngIf="!mobile">{{desktopSettings.length}}</span> different experiment settings.
+            For each setting, you can explore the timeline to see how the interactions work before starting the experiment.
+            When you are ready, you can start the test run in which you are asked to navigate to three targets to get familiar with the process.
+
+            After completing the test run, you will be asked to do two real runs with 8 targets each.
+            We will record how much time it takes you to navigate to the targets, so please try to do the tasks as fast as possible.
+        </p>
+        <!--<p>We will ask you to zoom in to the targets using different settings and methods. For example, we will ask you to zoom in using double click one time, and using <span *ngIf="mobile">two finger zoom</span> <span *ngIf="!mobile">the scroll wheel</span> a different time.</p>
+
+        <p>For each of these <span *ngIf="mobile">{{mobileSettings.length}}</span> <span *ngIf="!mobile">{{desktopSettings.length}}</span> methods, we will explain how they work. Then, we let you navigate to targets in a few test runs, where you can learn how to use the method. We will then show you 3 sets of targets and ask you to navigate to them as quickly as possible.</p>
+-->
+        <div class="next-step-wrap">
+            <button (click)="step=step-1">Back</button>
+            <button class="primary" (click)="studyBegun=true">Begin Study</button>
+        </div>
+
+    </div>
+
+</div>
+
+<study-app *ngIf="studyBegun"></study-app>

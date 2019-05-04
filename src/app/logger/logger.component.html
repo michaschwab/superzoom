@@ -1,0 +1,6 @@
+<div class="logger-replay-vis">
+    <div *ngFor="let pointerPos of replayPointerPositions" class="pointer" [class.down]="replayMouseDown" [style.left]="pointerPos.x + 'px'"  [style.top]="pointerPos.y + 'px'">
+    </div>
+</div>
+
+<ng-content></ng-content>

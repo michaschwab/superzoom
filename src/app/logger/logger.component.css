@@ -1,0 +1,31 @@
+logger {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+.logger-replay-vis {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.pointer {
+    display: block;
+    width: 20px;
+    height: 20px;
+    border-radius: 10px;
+
+    position: absolute;
+    margin: -20px 0 0 -10px;
+}
+
+.pointer:not(.down)
+{
+    background: rgba(84, 200, 86, 0.3);
+    border: 1px solid #45aa35;
+}
+.pointer.down
+{
+    background: rgba(200,0,0,0.3);
+    border: 1px solid #a00;
+}

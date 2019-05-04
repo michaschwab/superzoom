@@ -1,0 +1,140 @@
+<div class="scrollable-content" *ngIf="ready" style="user-select: text; overflow-x: auto">
+
+
+    <div>
+        <h1>Interaction State Comparison Computer</h1>
+
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+
+                <ng-container *ngFor="let setting of interactionsComputer">
+                    <th>{{setting.substr(15)}} ZI</th>
+                    <th>{{setting.substr(15)}} ZO</th>
+                    <th>{{setting.substr(15)}} P</th>
+                    <th>{{setting.substr(15)}} I</th>
+                </ng-container>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr *ngFor="let distName of distNames">
+                <td>{{distToID[distName.substr(5)]}}</td>
+
+                <ng-container *ngFor="let setting of interactionsComputer">
+                    <td *ngFor="let interaction of ['zoomInTimes', 'zoomOutTimes', 'panTimes', 'idleTimes']">
+                        <span *ngIf="interactionComparisonComputer[setting][distName][interaction]&&interactionComparisonComputer[setting][distName][interaction].length">
+                            {{(interactionComparisonComputer[setting][distName][interaction] | average) / 1000 | number:'1.1-1'}}
+                        </span>
+                        <span *ngIf="!interactionComparisonComputer[setting][distName][interaction]||!interactionComparisonComputer[setting][distName][interaction].length">
+                            0
+                        </span>
+                    </td>
+                </ng-container>
+            </tr>
+            </tbody>
+
+        </table>
+    </div>
+
+    Task Times
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+
+            <th *ngFor="let setting of interactionsComputer">
+                {{setting.substr(15)}}
+            </th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr *ngFor="let distName of distNames">
+            <td>{{distToID[distName.substr(5)]}}</td>
+
+            <td *ngFor="let setting of interactionsComputer">
+                <span *ngIf="interactionComparisonComputer[setting][distName]['taskTimes']&&interactionComparisonComputer[setting][distName]['taskTimes'].length">
+                    {{(interactionComparisonComputer[setting][distName].taskTimes | average) / 1000 | number:'1.1-1'}}
+                </span>
+                <span *ngIf="!interactionComparisonComputer[setting][distName].taskTimes||!interactionComparisonComputer[setting][distName]['taskTimes'].length">
+                    0
+                </span>
+            </td>
+        </tr>
+        </tbody>
+
+    </table>
+
+
+
+    <div>
+        <h1>Interaction State Comparison Mobile</h1>
+
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+
+                <ng-container *ngFor="let setting of interactionsMobile">
+                    <th>{{setting.substr(15)}} ZI</th>
+                    <th>{{setting.substr(15)}} ZO</th>
+                    <th>{{setting.substr(15)}} P</th>
+                    <th>{{setting.substr(15)}} I</th>
+                </ng-container>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr *ngFor="let distName of distNames">
+                <td>{{distToID[distName.substr(5)]}}</td>
+
+                <ng-container *ngFor="let setting of interactionsMobile">
+                    <td *ngFor="let interaction of ['zoomInTimes', 'zoomOutTimes', 'panTimes', 'idleTimes']">
+                        <span *ngIf="interactionComparisonMobile[setting][distName][interaction]&&interactionComparisonMobile[setting][distName][interaction].length">
+                            {{(interactionComparisonMobile[setting][distName][interaction] | average) / 1000 | number:'1.1-1'}}
+                        </span>
+                        <span *ngIf="!interactionComparisonMobile[setting][distName][interaction]||!interactionComparisonMobile[setting][distName][interaction].length">
+                            0
+                        </span>
+                    </td>
+                </ng-container>
+            </tr>
+            </tbody>
+
+        </table>
+
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+
+                <ng-container *ngFor="let setting of interactionsMobile">
+                    <th>{{setting.substr(15)}}</th>
+                </ng-container>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr *ngFor="let distName of distNames">
+                <td>{{distToID[distName.substr(5)]}}</td>
+
+                <ng-container *ngFor="let setting of interactionsMobile">
+                    <td *ngFor="let interaction of ['taskTimes']">
+                        <span *ngIf="interactionComparisonMobile[setting][distName][interaction]&&interactionComparisonMobile[setting][distName][interaction].length">
+                            {{(interactionComparisonMobile[setting][distName][interaction] | average) / 1000 | number:'1.1-1'}}
+                        </span>
+                        <span *ngIf="!interactionComparisonMobile[setting][distName][interaction]||!interactionComparisonMobile[setting][distName][interaction].length">
+                            0
+                        </span>
+                    </td>
+                </ng-container>
+            </tr>
+            </tbody>
+
+        </table>
+    </div>
+
+
+</div>

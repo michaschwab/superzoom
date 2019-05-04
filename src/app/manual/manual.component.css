@@ -1,0 +1,12 @@
+
+.target {
+    font-size: 20pt;
+    text-align: center;
+    display: block;
+    position: absolute;
+}
+
+.options-wrapper {
+    max-height: 400px;
+    overflow-y: auto;
+}

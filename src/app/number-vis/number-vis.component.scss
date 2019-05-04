@@ -1,0 +1,116 @@
+
+codable-timeline {
+  cursor: default;
+}
+
+codable-timeline text {
+    pointer-events: none;
+}
+
+codable-timeline text, codable-timeline polyline, .target, button {
+  pointer-events: none;
+  cursor: default;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.line-timeline, .circle-timeline {
+  /*width: 800px;
+  height: 600px;
+  display: block;*/
+  /*margin: auto;*/
+}
+
+.circle-timeline .circle-numbers text {
+  fill: #000;
+  font-size: 18px;
+  text-shadow: #fff 1px 1px 1px;
+}
+.horizontal .circle-numbers text {
+    text-anchor: middle;
+}
+.vertical .circle-numbers text {
+    dominant-baseline: central;
+}
+.circle-timeline .start-end {
+  fill: #000;
+}
+
+.circle-numbers circle {
+  fill: #ccc;
+}
+.circle-numbers rect {
+  /*fill: #fff;*/
+  fill: #eee;
+}
+.not-tiny .circle-numbers rect {
+  /*stroke: #999;*/
+  stroke: #fff;
+}
+
+.visible-numbers rect:hover {
+  /*fill: #ff7079;*/
+}
+
+.vertical .visibledates rect {
+    width: 70px;
+    x: -50px;
+}
+.horizontal .visibledates rect {
+    height: 40px;
+    y: -50px;
+}
+.visibledates text {
+    dominant-baseline: central;
+}
+
+.vertical .visibleparentdates rect {
+    width: 60px;
+    x: -30px;
+    stroke: #ccc;
+}
+.horizontal .visibleparentdates rect {
+    height: 30px;
+    y: -50px;
+    stroke: #ccc;
+}
+.date:not(.minute) rect {
+    fill: #fff;
+    pointer-events: none;
+    stroke: #ccc;
+}
+.date rect {
+    fill: #eee;
+}
+.date.minute rect {
+    stroke: #fff;
+}
+.date.minute rect:hover, .rectnumbers rect:hover {
+    fill: #afb3f6;
+}
+.date.minute.selected rect, .circle-numbers.selected rect {
+    fill: #5f5adb;
+}
+.date.minute.selected.correctlySelected rect, .circle-numbers.selected.correctlySelected rect {
+    fill: #00cc00;
+}
+.horizontal .date {
+    text-anchor: middle;
+}
+.vertical .visibleparentdates text {
+    /*writing-mode: tb;
+    glyph-orientation-vertical: 0;*/
+    /*rotate: -90;*/
+    /*letter-spacing: 5px;*/
+
+}
+
+.texts, .texts g, .texts text {
+    pointer-events: none;
+}
+
+.deleted {
+    display: none;
+}

@@ -1,0 +1,57 @@
+<div class="scrollable-content" style="user-select: text; overflow-x: auto; width: 99%" *ngIf="ready">
+
+    <input type="text" [(ngModel)]="currentRun" />
+    <input type="text" [(ngModel)]="currentSetting" />
+    <input type="text" [(ngModel)]="currentStudy" />
+
+    <button (click)="sortStatii=!sortStatii"><span *ngIf="sortStatii">Sorting is on</span><span *ngIf="!sortStatii">Sorting is off</span></button>
+    <button (click)="prepareTimelines()">Go</button>
+    <!--<svg style="width: 1000px; height: 1000px">
+        <g *ngFor="let timeline of timelineDataBySettingDistStudy[computerDefaultSetting]['dist-0']['SZ03P']; let i=index" [attr.transform]="'translate(0,'+i*5+')'">
+            <svg:line x></svg:line>
+        </g>
+    </svg>-->
+    <!--
+    <svg style="width: 1000px; height: 1000px;">
+        <svg:g *ngFor="let run of timelineDataBySettingDistStudy[computerDefaultSetting]['dist-0']['SZ03P']; let i=index" [attr.transform]="'translate(0,'+i*5+')'">
+            <line *ngFor="let rangePoint of run.timeline" [attr.x1]="rangePoint.left" [style.width]="rangePoint.width + 'px'" [attr.stroke]="rangePoint.color"></line>
+        </svg:g>
+    </svg>-->
+
+    <!--<div *ngFor="let run of timelineDataBySettingDistStudy[computerDefaultSetting]['dist-0']['SZ03P']; let i=index" class="run" [style.width]="run.taskTime * timeScale + 'px'">
+        <div *ngFor="let rangePoint of run.scaleTimeline" class="scale-timepoint" [style.left]="rangePoint.left + 'px'" [style.width]="rangePoint.width + 'px'" [style.background-color]="rangePoint.color"></div>
+    </div>-->
+
+
+    <div class="setting-wrap">
+        {{currentSetting}}
+        <div *ngFor="let dist of distNames">
+            <!--<h2>{{dist}}</h2>-->
+
+            <div *ngIf="timelineDataBySettingDistStudy[comparisonSettingPrefix+currentSetting]">
+                <div *ngFor="let run of timelineDataBySettingDistStudy[comparisonSettingPrefix+currentSetting][dist]; let i=index" class="run" [style.width]="run.taskTime * timeScale + 'px'">
+                    <div *ngFor="let rangePoint of run.statusTimeline" class="bar-part {{rangePoint.state}}" [style.left]="(rangePoint.time - run.startTime) * this.timeScale - rangePoint.duration * timeScale + 'px'" [style.width]="rangePoint.duration * timeScale + 'px'" [style.background-color]="rangePoint.color"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+
+
+    <!--<div *ngFor="let log of currentLogValues">
+        Distance <span style="width: 70px; display: inline-block">{{log.distance}}</span>:
+
+        <div class="bar" style="position:relative" [style.width]="log.taskTime / 1000 * barScalingFactor + 'px'">
+            <div *ngFor="let status of log.statusTimeline" class="bar-part {{status.state}}" [style.width]="status.duration / 1000 * barScalingFactor + 'px'">
+
+            </div>
+            <svg style="width:100%;height:100%;position:absolute;left:0;top:0">
+                <svg:path [attr.d]="currentLogRangeTimeline['dist-'+log.distance]" stroke="black" stroke-width="3" fill-opacity="0" />
+            </svg>
+        </div>
+        {{log.taskTime / 1000 | round }}s
+    </div>-->
+
+</div>
